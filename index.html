@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rebalanceador de Carteiras · Perfil Conservador / Moderado / Agressivo</title>
+<title>PBF · Rebalanceador + Relatório XP</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root {
   --bg: #0e1117; --bg2: #161b25; --bg3: #1c2333;
@@ -19,7 +20,9 @@
   --card-bg: #161b25; --card-border: rgba(255,255,255,0.07);
   --input-bg: #1c2333; --input-border: rgba(255,255,255,0.13);
   --alvo-bar-bg: #1c2333; --resumo-item-bg: #1c2333;
+  --debug-bg: #1c2333; --overlay-bg: rgba(14,17,23,.88);
   --footer-border: rgba(255,255,255,0.07);
+  --relatorio-bg: linear-gradient(135deg, rgba(245,200,66,0.03) 0%, rgba(52,152,219,0.03) 100%);
   --ativo-item-bg: rgba(255,255,255,0.03);
 }
 body.light {
@@ -34,25 +37,12 @@ body.light {
   --card-bg: #ffffff; --card-border: rgba(0,0,0,0.08);
   --input-bg: #ffffff; --input-border: #e2e8f0;
   --alvo-bar-bg: #e2e8f0; --resumo-item-bg: #f7fafc;
+  --debug-bg: #f7fafc; --overlay-bg: rgba(255,255,255,.95);
   --footer-border: rgba(0,0,0,0.08);
   --ativo-item-bg: #f9f9fc;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease; }
-
-body { 
-  font-family: 'DM Sans', 'Atkinson Hyperlegible', sans-serif; 
-  background: var(--bg); 
-  color: var(--text); 
-  min-height: 100vh; 
-}
-
-.classe-input, .alvo-pct, .rec-nums, .rec-valor, .resumo-val, 
-.patrim-input, .header-date {
-  font-family: 'Atkinson Hyperlegible', 'DM Mono', monospace;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 .header { background: var(--header-bg); border-bottom: 1px solid var(--header-border); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
 .header-logo { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; }
 .dot { width: 28px; height: 28px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #000; }
@@ -63,13 +53,36 @@ body {
 .main { max-width: 1300px; margin: 0 auto; padding: 2rem; }
 .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
 .card-title { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.perfis-row { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
-.perfil-btn { flex: 1; min-width: 100px; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; border: 1px solid var(--border2); background: var(--bg2); color: var(--text2); }
-.perfil-btn:hover { border-color: var(--gold); color: var(--gold); }
-.perfil-btn.ativo { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 600; }
+.upload-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.file-label { display: flex; align-items: center; gap: 8px; background: var(--bg3); border: 1.5px dashed var(--border2); border-radius: 8px; padding: 9px 14px; cursor: pointer; font-size: 14px; color: var(--text2); flex: 1; min-width: 180px; }
+.file-label:hover { border-color: var(--gold); color: var(--gold); }
+#filePdf { display: none; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; white-space: nowrap; }
+.btn-gold { background: var(--gold); color: #000; }
+.btn-gold:hover { background: var(--gold2); transform: translateY(-1px); }
+.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+.btn-ghost:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+.btn-full { background: var(--gold); color: #000; font-size: 15px; font-weight: 600; width: 100%; padding: 12px; justify-content: center; margin-top: 1rem; border-radius: 10px; }
+.btn-full:hover { background: var(--gold2); transform: translateY(-1px); }
+.status { display: none; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 8px; font-size: 14px; margin-top: 0.75rem; }
+.status.show { display: flex; }
+.status-ok { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46, 204, 113, 0.25); }
+.status-err { background: var(--red-bg); color: var(--red); border: 1px solid rgba(231, 76, 60, 0.25); }
+.patrim-tag { display: none; align-items: center; gap: 6px; margin-top: 0.6rem; background: rgba(245, 200, 66, 0.1); border: 1px solid rgba(245, 200, 66, 0.25); border-radius: 20px; padding: 6px 14px; font-size: 14px; font-weight: 600; color: var(--gold); width: fit-content; }
+.patrim-tag.show { display: flex; }
+.btn-debug { background: transparent; border: 1px solid var(--border2); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 500; cursor: pointer; color: var(--text2); display: inline-flex; align-items: center; gap: 6px; margin-top: 1rem; }
+.btn-debug:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,200,66,0.1); }
+.debug-box { display: none; background: var(--debug-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 12px; max-height: 400px; overflow-y: auto; white-space: pre-wrap; margin-top: 0.5rem; font-family: monospace; }
+.debug-box.show { display: block; }
+.overlay { display: none; position: fixed; inset: 0; background: var(--overlay-bg); z-index: 200; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
+.overlay.show { display: flex; }
+.spin { width: 40px; height: 40px; border: 3px solid var(--border2); border-top-color: var(--gold); border-radius: 50%; animation: rot 0.8s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+.footer { text-align: center; font-size: 12px; color: var(--text3); padding: 2rem; border-top: 1px solid var(--footer-border); margin-top: 1rem; }
+.arrow { transition: transform 0.2s ease; display: inline-block; }
+.arrow.rotated { transform: rotate(90deg); }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
-
 .classe-row, .alvo-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
 .classe-row:last-of-type, .alvo-row:last-of-type { border-bottom: none; }
 .dot8 { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -82,19 +95,16 @@ body {
 .total-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; margin-top: 0.75rem; }
 .total-ok { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46, 204, 113, 0.2); }
 .total-err { background: var(--red-bg); color: var(--red); border: 1px solid rgba(231, 76, 60, 0.2); }
-
 .alvo-nome { flex: 1; font-size: 14px; }
 .alvo-bar-wrap { width: 60px; height: 4px; background: var(--alvo-bar-bg); border-radius: 2px; overflow: hidden; }
 .alvo-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; }
 .alvo-pct { font-size: 15px; font-weight: 700; color: var(--gold); min-width: 42px; text-align: right; }
-
 .ativos-container { margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
 .subtitle { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 0.5rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
 .ativo-row { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 8px; background: var(--ativo-item-bg); margin-bottom: 4px; font-size: 13px; }
 .ativo-nome { flex: 1; font-weight: 500; }
 .ativo-classe { font-size: 11px; color: var(--text3); background: var(--bg3); padding: 2px 8px; border-radius: 20px; }
 .ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; }
-
 .rec-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .rec-nome { flex: 1; font-size: 14px; min-width: 110px; }
 .rec-nums { font-size: 14px; color: var(--text2); font-weight: 500; }
@@ -102,44 +112,36 @@ body {
 .rec-valor.alocar { color: var(--green); }
 .rec-valor.retirar { color: var(--red); }
 .rec-valor.manter { color: var(--amber); }
-
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
 .b-manter { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(243, 156, 18, 0.3); }
 .b-alocar { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46, 204, 113, 0.3); }
 .b-retirar { background: var(--red-bg); color: var(--red); border: 1px solid rgba(231, 76, 60, 0.3); }
-
 .resumo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 @media (max-width: 500px) { .resumo-grid { grid-template-columns: repeat(2, 1fr); } }
 .resumo-item { background: var(--resumo-item-bg); border-radius: 8px; padding: 0.75rem; text-align: center; }
 .resumo-label { font-size: 12px; color: var(--text3); margin-bottom: 4px; }
 .resumo-val { font-size: 26px; font-weight: 700; }
-
 .legenda { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
 .legenda-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text3); }
 .patrim-row { display: flex; align-items: center; gap: 1rem; margin: 0.75rem 0 0.25rem; flex-wrap: wrap; }
-.patrim-input { background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 8px 12px; font-size: 15px; width: 200px; color: var(--text); }
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
-.btn-gold { background: var(--gold); color: #000; }
-.btn-gold:hover { background: var(--gold2); transform: translateY(-1px); }
-.btn-full { background: var(--gold); color: #000; font-size: 15px; font-weight: 600; width: 100%; padding: 12px; justify-content: center; margin-top: 1rem; border-radius: 10px; }
-.btn-full:hover { background: var(--gold2); transform: translateY(-1px); }
-.footer { text-align: center; font-size: 12px; color: var(--text3); padding: 2rem; border-top: 1px solid var(--footer-border); margin-top: 1rem; }
-.status { display: none; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 8px; font-size: 14px; margin-top: 0.75rem; }
-.status.show { display: flex; }
-.status-ok { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46, 204, 113, 0.25); }
-.status-err { background: var(--red-bg); color: var(--red); border: 1px solid rgba(231, 76, 60, 0.25); }
+.patrim-input { background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 8px 12px; font-size: 15px; width: 220px; color: var(--text); }
+.relatorio-texto { font-size: 14px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
+.cenario-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 12px; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; resize: vertical; margin-top: 0.5rem; }
+.cenario-textarea:focus { outline: none; border-color: var(--gold); }
 </style>
 </head>
 <body>
 
+<div class="overlay" id="overlay"><div class="spin"></div><div>Processando PDF...</div></div>
+
 <header class="header">
-  <div class="header-logo"><div class="dot">PBF</div> Rebalanceador de Carteiras · Perfis XP</div>
+  <div class="header-logo"><div class="dot">PBF</div> Rebalanceador + Relatório XP</div>
   <div class="header-right"><div class="header-date" id="hDate"></div><button class="theme-toggle" id="themeToggle">🌙</button></div>
 </header>
 
 <main class="main">
-  <!-- PERFIS -->
-  <div class="perfis-row" id="perfisRow"></div>
+  <!-- Botões de perfil -->
+  <div class="perfis-row" id="perfisRow" style="display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap;"></div>
 
   <div class="grid2">
     <!-- ALOCAÇÃO ATUAL (EDITÁVEL) -->
@@ -162,7 +164,7 @@ body {
     </div>
   </div>
 
-  <!-- ÁREA DE RESULTADOS -->
+  <!-- RESULTADO DO REBALANCEAMENTO -->
   <div id="resultArea" class="card" style="display:none">
     <div class="card-title">📋 Recomendações de movimentação</div>
     <div id="listaRec"></div>
@@ -173,30 +175,45 @@ body {
       <div class="legenda-item"><div class="dot8" style="background:var(--red)"></div>Retirar (vender)</div>
     </div>
   </div>
-  <div id="status" class="status"></div>
+
+  <!-- ÁREA DO RELATÓRIO MENSAL (CENÁRIO + DESEMPENHO) -->
+  <div class="card">
+    <div class="card-title">📝 Cenário Macro do Mês</div>
+    <textarea id="textoCenario" class="cenario-textarea" rows="6">O mês de abril de 2026 foi marcado por uma consolidação das expectativas econômicas globais e locais. No Brasil, o foco permaneceu na trajetória da inflação e no compromisso fiscal, fatores que influenciam diretamente o ritmo de queda da taxa Selic pelo Banco Central. No cenário global, a resiliência da economia norte-americana e a manutenção dos juros em patamares elevados pelo Fed continuam ditando o ritmo dos mercados, somadas às tensões geopolíticas que adicionam volatilidade aos preços das commodities e à percepção de risco dos investidores.</textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📄 Importar relatório XP (PDF)</div>
+    <div class="upload-row">
+      <label class="file-label" for="filePdf">📎 <span id="fileName">Selecionar arquivo PDF...</span></label>
+      <input type="file" id="filePdf" accept=".pdf">
+      <button class="btn btn-gold" id="btnImportar">🔍 IMPORTAR PDF</button>
+      <button class="btn btn-ghost" id="btnLimpar">Limpar</button>
+    </div>
+    <div id="status" class="status"></div>
+    <div id="patrimTag" class="patrim-tag">💰 <span id="patrimVal"></span></div>
+    <button class="btn-debug" id="btnToggleDebug"><span class="arrow" id="debugArrow">▶</span> Detalhes da leitura</button>
+    <div id="debugBox" class="debug-box"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📈 Relatório Mensal - Análise PBF</div>
+    <div id="relatorioConteudo" class="relatorio-container" style="background: var(--relatorio-bg); border-radius: 12px; padding: 1.5rem;">
+      <div style="text-align: center; padding: 2rem; color: var(--text3);">⚡ Importe um PDF para gerar o relatório automático</div>
+    </div>
+    <button class="btn btn-ghost" id="btnCopiar" style="margin-top: 1rem; width: auto;">📋 Copiar relatório (WhatsApp)</button>
+  </div>
 </main>
-<footer class="footer">📌 Material informativo — as alocações por ativo seguem as carteiras recomendadas (Excel original). Para atualizar pesos/ativos, edite a constante CARTEIRAS no início do script.</footer>
+
+<footer class="footer">📌 Material informativo — as alocações por ativo seguem as carteiras recomendadas do Excel. Para atualizar pesos/ativos, edite a constante CARTEIRAS no início do script.</footer>
 
 <script>
 // ============================================================
-// 🛠️ CONFIGURAÇÃO MANUAL DAS CARTEIRAS (FÁCIL DE EDITAR)
+// 🛠️ CARTEIRAS RECOMENDADAS (extraídas do Excel)
 // ============================================================
-// As classes utilizadas são: Prefixado, Pós-fixado, Inflação, Multimercado, 
-// Renda Variável, Renda Fixa Global, Renda Variável Global.
-// Cada perfil possui "classes" (peso %) e "ativos" (lista com nome, classe e peso % na carteira total)
-// ============================================================
-
 const CARTEIRAS = {
   Conservador: {
-    classes: {
-      "Prefixado": 15,
-      "Pós-fixado": 85,
-      "Inflação": 0,
-      "Multimercado": 0,
-      "Renda Variável": 0,
-      "Renda Fixa Global": 0,
-      "Renda Variável Global": 0
-    },
+    classes: { "Prefixado": 15, "Pós-fixado": 85, "Inflação": 0, "Multimercado": 0, "Renda Variável": 0, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
       { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 15 },
@@ -208,15 +225,7 @@ const CARTEIRAS = {
     ]
   },
   Moderado: {
-    classes: {
-      "Prefixado": 13,
-      "Pós-fixado": 58,
-      "Inflação": 20,
-      "Multimercado": 5,
-      "Renda Variável": 4,
-      "Renda Fixa Global": 0,
-      "Renda Variável Global": 0
-    },
+    classes: { "Prefixado": 13, "Pós-fixado": 58, "Inflação": 20, "Multimercado": 5, "Renda Variável": 4, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 13 },
       { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 12 },
@@ -234,15 +243,7 @@ const CARTEIRAS = {
     ]
   },
   Agressivo: {
-    classes: {
-      "Prefixado": 15,
-      "Pós-fixado": 50,
-      "Inflação": 24,
-      "Multimercado": 5,
-      "Renda Variável": 6,
-      "Renda Fixa Global": 0,
-      "Renda Variável Global": 0
-    },
+    classes: { "Prefixado": 15, "Pós-fixado": 50, "Inflação": 24, "Multimercado": 5, "Renda Variável": 6, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
       { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 8 },
@@ -259,32 +260,22 @@ const CARTEIRAS = {
   }
 };
 
-// Classes (ordem para exibição e análise)
-const CLASSES = [
-  "Prefixado",
-  "Pós-fixado",
-  "Inflação",
-  "Multimercado",
-  "Renda Variável",
-  "Renda Fixa Global",
-  "Renda Variável Global"
-];
-
+// Classes de ativos (ordem para exibição)
+const CLASSES = ["Prefixado", "Pós-fixado", "Inflação", "Multimercado", "Renda Variável", "Renda Fixa Global", "Renda Variável Global"];
 const CORES = ["c0","c1","c2","c3","c4","c5","c6"];
 
 let perfilAtivo = "Moderado";
 let inputsMap = {};
 
+// ========== FUNÇÕES AUXILIARES ==========
 function fmtPct(v) { return v.toFixed(2).replace('.', ',') + ' %'; }
 function fmtBRL(v) { return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits: 2}); }
-
 function setStatus(msg, tipo) { 
   const el = document.getElementById('status'); 
   el.innerHTML = msg; 
   el.className = 'status show status-' + tipo; 
   setTimeout(() => el.classList.remove('show'), 4000); 
 }
-
 function atualizarTotal() {
   let t = 0;
   CLASSES.forEach(c => { t += parseFloat(inputsMap[c]?.value || 0) || 0; });
@@ -292,7 +283,7 @@ function atualizarTotal() {
   document.getElementById('totalBar').className = 'total-bar ' + (Math.abs(t - 100) < 1 ? 'total-ok' : 'total-err');
 }
 
-// RENDERIZA INPUTS DE ALOCAÇÃO ATUAL
+// ========== RENDERIZAÇÃO DA ALOCAÇÃO ATUAL (INPUTS) ==========
 function renderInputs() {
   const container = document.getElementById('inputsAtual');
   container.innerHTML = '';
@@ -312,12 +303,10 @@ function renderInputs() {
   atualizarTotal();
 }
 
-// RENDERIZA TABELA DE CLASSES ALVO + LISTA DE ATIVOS
+// ========== RENDERIZAÇÃO DA CARTEIRA RECOMENDADA ==========
 function renderRecomendacao() {
   const rec = CARTEIRAS[perfilAtivo];
   document.getElementById('perfilLabel').textContent = perfilAtivo;
-  
-  // Tabela de classes alvo
   const containerAlvo = document.getElementById('tabelaAlvo');
   containerAlvo.innerHTML = CLASSES.map((c, i) => {
     const peso = rec.classes[c] || 0;
@@ -331,16 +320,11 @@ function renderRecomendacao() {
     `;
   }).join('');
   
-  // Lista de ativos recomendados
   const containerAtivos = document.getElementById('ativosAlvo');
   if (rec.ativos && rec.ativos.length) {
-    const ativosPorClasse = {};
-    CLASSES.forEach(c => { ativosPorClasse[c] = []; });
-    rec.ativos.forEach(ativo => { if (ativosPorClasse[ativo.classe]) ativosPorClasse[ativo.classe].push(ativo); });
-    
     let html = `<div class="subtitle">📌 Detalhamento por ativo (percentual da carteira total)</div>`;
     for (let classe of CLASSES) {
-      const ativosDaClasse = ativosPorClasse[classe];
+      const ativosDaClasse = rec.ativos.filter(a => a.classe === classe);
       if (ativosDaClasse.length === 0) continue;
       html += `<div style="margin-top:0.75rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
       ativosDaClasse.forEach(ativo => {
@@ -359,12 +343,12 @@ function renderRecomendacao() {
   }
 }
 
-// RENDERIZA BOTÕES DE PERFIL
+// ========== BOTÕES DE PERFIL ==========
 function renderPerfis() {
   const icons = { Conservador: '🛡️', Moderado: '⚖️', Agressivo: '🚀' };
   const container = document.getElementById('perfisRow');
   container.innerHTML = Object.keys(CARTEIRAS).map(p => `
-    <button class="perfil-btn ${p === perfilAtivo ? 'ativo' : ''}" data-perfil="${p}">
+    <button class="perfil-btn ${p === perfilAtivo ? 'ativo' : ''}" data-perfil="${p}" style="flex:1; min-width:100px; padding:10px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; text-align:center; border:1px solid var(--border2); background:var(--bg2); color:var(--text2);">
       ${icons[p]} ${p}
     </button>
   `).join('');
@@ -378,7 +362,7 @@ function renderPerfis() {
   });
 }
 
-// ANÁLISE DE REBALANCEAMENTO
+// ========== ANÁLISE DE REBALANCEAMENTO ==========
 function analisar() {
   let totalAtual = 0;
   const atual = {};
@@ -386,12 +370,10 @@ function analisar() {
     atual[c] = parseFloat(inputsMap[c]?.value || 0) || 0;
     totalAtual += atual[c];
   });
-  
   if (Math.abs(totalAtual - 100) > 1) {
     setStatus(`Total da alocação atual deve ser próximo de 100% (atual: ${fmtPct(totalAtual)}). Tolerância de 1%`, 'err');
     return;
   }
-  
   const alvo = CARTEIRAS[perfilAtivo].classes;
   let patrimonioInput = document.getElementById('patrimonioInput').value;
   let patrimonio = parseFloat(patrimonioInput.replace(/\./g, '').replace(',', '.'));
@@ -403,7 +385,6 @@ function analisar() {
     const alvoPct = alvo[c] || 0;
     const diff = alvoPct - atualPct;
     const valorMov = Math.abs(diff * patrimonio / 100);
-    
     let badgeClass, label, valorClass;
     if (Math.abs(diff) < 0.05) {
       badgeClass = 'b-manter'; label = '✓ Manter'; valorClass = 'manter';
@@ -415,7 +396,6 @@ function analisar() {
       badgeClass = 'b-retirar'; label = `↓ Retirar ${fmtPct(Math.abs(diff))}`; valorClass = 'retirar';
       nRetirar++;
     }
-    
     const valorDisplay = Math.abs(diff) < 0.05 ? 'R$ 0,00' : fmtBRL(valorMov);
     return `
       <div class="rec-row">
@@ -428,11 +408,10 @@ function analisar() {
     `;
   }).join('');
   
-  // Observação sobre ativos (lembrar de seguir a alocação sugerida)
   let observacao = '';
   if (CARTEIRAS[perfilAtivo].ativos && CARTEIRAS[perfilAtivo].ativos.length) {
     observacao = `<div style="margin-top: 1rem; padding: 0.75rem; background: var(--blue-bg); border-radius: 8px; border-left: 3px solid var(--blue);">
-      <strong style="color: var(--blue);">ℹ️ Distribuição sugerida:</strong> Utilize os valores acima para ajustar as classes. Dentro de cada classe, prefira os ativos listados na carteira recomendada (consulte os detalhes ao lado).
+      <strong style="color: var(--blue);">ℹ️ Distribuição sugerida:</strong> Utilize os valores acima para ajustar as classes. Dentro de cada classe, prefira os ativos listados na carteira recomendada.
     </div>`;
   }
   
@@ -443,49 +422,191 @@ function analisar() {
     <div class="resumo-item"><div class="resumo-label">Retirar</div><div class="resumo-val" style="color:var(--red)">${nRetirar}</div></div>
     <div class="resumo-item"><div class="resumo-label">Perfil</div><div class="resumo-val" style="color:var(--gold);font-size:14px">${perfilAtivo}</div></div>
   `;
-  
   const resultArea = document.getElementById('resultArea');
   resultArea.style.display = 'block';
   resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// EVENTOS E INICIALIZAÇÃO
-document.getElementById('btnAnalisar').addEventListener('click', analisar);
-document.getElementById('themeToggle').addEventListener('click', () => {
-  const body = document.body;
-  const btn = document.getElementById('themeToggle');
-  if (body.classList.contains('light')) {
-    body.classList.remove('light');
-    localStorage.setItem('theme', 'dark');
-    btn.textContent = '🌙';
-  } else {
-    body.classList.add('light');
-    localStorage.setItem('theme', 'light');
-    btn.textContent = '☀️';
+// ========== PARSER DO PDF (RELATÓRIO XP) ==========
+let debugLines = [];
+function dbg(txt) { debugLines.push(txt); document.getElementById('debugBox').textContent = debugLines.join('\n'); }
+function clearDebug() { debugLines = []; document.getElementById('debugBox').textContent = ''; }
+
+function superLimpeza(texto) { return texto.replace(/\s+/g, ''); }
+
+async function extrairDadosPDF(file) {
+  let ab = await file.arrayBuffer();
+  let pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+  let dados = {
+    alocacoes: {},
+    retornos: {},
+    patrimonio: null,
+    rentabilidadeMensal: null,
+    pctCdi: null,
+    mesReferencia: "",
+    anoReferencia: ""
+  };
+  for (let p = 1; p <= Math.min(pdf.numPages, 6); p++) {
+    let page = await pdf.getPage(p);
+    let textContent = await page.getTextContent();
+    let textoOriginal = textContent.items.map(item => item.str).join(' ');
+    let textoLimpo = superLimpeza(textoOriginal);
+    dbg(`\n--- PÁGINA ${p} (LIMPA) ---\n${textoLimpo.substring(0, 1000)}`);
+    if (p === 1) {
+      let dataMatch = textoLimpo.match(/DataDeReferência(\d{2})\/(\d{2})\/(\d{4})/);
+      if (dataMatch) {
+        let meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+        dados.mesReferencia = meses[parseInt(dataMatch[2]) - 1];
+        dados.anoReferencia = dataMatch[3];
+        dbg(`📅 Data: ${dados.mesReferencia}/${dados.anoReferencia}`);
+      }
+    }
+    let patMatch = textoLimpo.match(/PATRIMÔNIOTOTALBRUTO:R\$([\d\.]+,\d{2})/i);
+    if (patMatch) {
+      dados.patrimonio = patMatch[1];
+      dbg(`💰 Patrimônio: R$ ${dados.patrimonio}`);
+    }
+    let rentMatch = textoLimpo.match(/R\$[\d\.]+,\d{2}([\d,]+)%([\d,]+)%/i);
+    if (rentMatch && !dados.rentabilidadeMensal) {
+      dados.rentabilidadeMensal = rentMatch[1].replace(',', '.');
+      dados.pctCdi = rentMatch[2].replace(',', '.');
+      dbg(`📈 Rentabilidade Mensal: ${dados.rentabilidadeMensal}%`);
+      dbg(`📊 %CDI: ${dados.pctCdi}%`);
+    }
+    let regexClasse = /([A-Za-zÀ-Úà-û]+?)\((\d+),(\d+)%\)R\$[\d\.]+,\d+(-?\d+),(\d+)%/gi;
+    let match;
+    while ((match = regexClasse.exec(textoLimpo)) !== null) {
+      let nome = match[1];
+      let alocacao = match[2] + ',' + match[3];
+      let retorno = match[4] + ',' + match[5];
+      if (nome === 'PósFixado') nome = 'Pós-fixado';
+      else if (nome === 'PréFixado') nome = 'Prefixado';
+      else if (nome === 'Inflação') nome = 'Inflação';
+      else if (nome === 'RendaVariávelBrasil') nome = 'Renda Variável';
+      else if (nome === 'RendaVariávelGlobal') nome = 'Renda Variável Global';
+      else if (nome === 'RendaFixaGlobal') nome = 'Renda Fixa Global';
+      else if (nome === 'Alternativo') nome = 'Alternativo';
+      else if (nome === 'Multimercado') nome = 'Multimercado';
+      if (CLASSES.includes(nome) && !dados.alocacoes[nome]) {
+        dados.alocacoes[nome] = alocacao;
+        dados.retornos[nome] = retorno;
+        dbg(`✅ ${nome}: alocação ${alocacao}%, retorno ${retorno}%`);
+      }
+    }
   }
-});
-
-// Preenche data
-document.getElementById('hDate').textContent = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
-
-// Carrega tema salvo
-if (localStorage.getItem('theme') === 'light') {
-  document.body.classList.add('light');
-  document.getElementById('themeToggle').textContent = '☀️';
+  return dados;
 }
 
-// Inicializa
-renderInputs();
-renderPerfis();
-renderRecomendacao();
-
-// Ajuste de exemplo: preencher alguns valores iniciais para demonstração (opcional)
-setTimeout(() => {
-  // Exemplo: colocar valores próximos do perfil moderado para teste, mas não obrigatório
-  if (perfilAtivo === 'Moderado') {
-    // pode deixar em branco ou definir algo
+function gerarRelatorioTexto(dados) {
+  let mes = dados.mesReferencia || "abril";
+  let ano = dados.anoReferencia || "2026";
+  let rentabilidade = dados.rentabilidadeMensal;
+  let pctCdi = dados.pctCdi;
+  let patrimonio = dados.patrimonio;
+  let cenario = document.getElementById('textoCenario').value;
+  let desempenhoTexto = "";
+  let classesList = [];
+  for (let nome in dados.alocacoes) {
+    if (dados.alocacoes[nome]) {
+      let alocNum = parseFloat(dados.alocacoes[nome].replace(',', '.'));
+      classesList.push({ nome: nome, alocacao: alocNum, alocStr: dados.alocacoes[nome], retorno: dados.retornos[nome] });
+    }
   }
-}, 100);
+  classesList.sort((a, b) => b.alocacao - a.alocacao);
+  for (let item of classesList) {
+    let ret = item.retorno.replace(',', '.');
+    let retNum = parseFloat(ret);
+    let isNegativo = ret.startsWith('-') || retNum < 0;
+    let movimento = isNegativo ? 'recuou' : 'subiu';
+    let retornoAbs = isNegativo ? ret.replace('-', '') : ret;
+    desempenhoTexto += `${item.nome} (${item.alocStr}% da carteira) ${movimento} ${retornoAbs}%; `;
+  }
+  if (desempenhoTexto === "") desempenhoTexto = "Não foi possível capturar os retornos individuais das classes no PDF.";
+  let rentabilidadeStr = rentabilidade ? `${rentabilidade.replace(',', '.')}%` : "não disponível";
+  let pctCdiStr = pctCdi ? `${pctCdi.replace(',', '.')}%` : "não disponível";
+  let patrimonioStr = patrimonio ? fmtBRL(parseFloat(patrimonio.replace(/\./g, '').replace(',', '.'))) : "";
+  return `Prezado cliente, tudo bem? Segue o seu relatório mensal.
+
+${cenario}
+
+Sua carteira atravessou esse ambiente com solidez, apresentando um retorno de ${rentabilidadeStr} no mês de ${mes.toLowerCase()} de ${ano}, equivalente a ${pctCdiStr} do CDI do período.${patrimonioStr ? ` O patrimônio atual é de ${patrimonioStr}.` : ''}
+
+No desempenho por classe de ativo: ${desempenhoTexto}
+
+Por fim, reforçamos a importância da disciplina na manutenção da estratégia e nos aportes focando no desenvolvimento da carteira no longo prazo. Essa postura é fundamental para atravessar diferentes ciclos de mercado, aproveitar oportunidades, reduzir os impactos das oscilações no curto prazo e manter a carteira alinhada aos seus objetivos financeiros.`;
+}
+
+// ========== EVENTOS E INICIALIZAÇÃO ==========
+document.getElementById('btnToggleDebug').addEventListener('click', () => {
+  document.getElementById('debugBox').classList.toggle('show');
+  document.getElementById('debugArrow').classList.toggle('rotated');
+});
+document.getElementById('btnCopiar').addEventListener('click', async () => {
+  const texto = document.getElementById('relatorioConteudo').innerText;
+  try {
+    await navigator.clipboard.writeText(texto);
+    setStatus('✅ Texto copiado para a área de transferência!', 'ok');
+  } catch (err) {
+    setStatus('❌ Erro ao copiar texto', 'err');
+  }
+});
+document.getElementById('btnImportar').addEventListener('click', async () => {
+  let file = document.getElementById('filePdf').files[0];
+  if (!file) { setStatus('Selecione um arquivo PDF primeiro.', 'err'); return; }
+  clearDebug();
+  document.getElementById('overlay').classList.add('show');
+  try {
+    let dados = await extrairDadosPDF(file);
+    // Preencher alocação atual com os dados extraídos
+    for (let classe of CLASSES) {
+      if (dados.alocacoes[classe]) {
+        let valor = parseFloat(dados.alocacoes[classe].replace(',', '.'));
+        if (!isNaN(valor)) inputsMap[classe].value = valor.toFixed(2);
+      }
+    }
+    atualizarTotal();
+    // Patrimônio
+    if (dados.patrimonio) {
+      let patrimonioNum = parseFloat(dados.patrimonio.replace(/\./g, '').replace(',', '.'));
+      document.getElementById('patrimonioInput').value = patrimonioNum.toFixed(2).replace('.', ',');
+      document.getElementById('patrimVal').innerHTML = fmtBRL(patrimonioNum);
+      document.getElementById('patrimTag').classList.add('show');
+    }
+    let textoFinal = gerarRelatorioTexto(dados);
+    document.getElementById('relatorioConteudo').innerHTML = `<div class="relatorio-texto">${textoFinal.replace(/\n/g, '<br>')}</div>`;
+    setStatus('✅ PDF importado! Alocação atual preenchida e relatório gerado.', 'ok');
+  } catch (e) {
+    setStatus('Erro ao processar PDF: ' + e.message, 'err');
+    dbg('ERRO: ' + e.message);
+  } finally {
+    document.getElementById('overlay').classList.remove('show');
+  }
+});
+document.getElementById('btnLimpar').addEventListener('click', () => {
+  CLASSES.forEach(c => { if (inputsMap[c]) inputsMap[c].value = '0'; });
+  document.getElementById('patrimonioInput').value = '1000000';
+  atualizarTotal();
+  document.getElementById('resultArea').style.display = 'none';
+  document.getElementById('status').classList.remove('show');
+  document.getElementById('patrimTag').classList.remove('show');
+  document.getElementById('relatorioConteudo').innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text3);">⚡ Importe um PDF para gerar o relatório automático</div>';
+  clearDebug();
+  document.getElementById('filePdf').value = '';
+  document.getElementById('fileName').textContent = 'Selecionar arquivo PDF...';
+});
+document.getElementById('btnAnalisar').addEventListener('click', analisar);
+document.getElementById('themeToggle').addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  document.getElementById('themeToggle').textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
+});
+(function init() {
+  if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+  document.getElementById('hDate').textContent = new Date().toLocaleDateString('pt-BR');
+  renderInputs();
+  renderPerfis();
+  renderRecomendacao();
+})();
 </script>
 </body>
 </html>
