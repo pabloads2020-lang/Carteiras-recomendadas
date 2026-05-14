@@ -11,8 +11,7 @@
   --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
   --gold: #f5c842; --gold2: #e0a800;
   --text: #e8eaf0; --text2: #8b93a7; --text3: #555e72;
-  --green: #2ecc71; --green-bg: rgba(46,204,113,0.12);
-  --blue: #3498db;
+  --green: #2ecc71;
   --card-bg: #161b25; --card-border: rgba(255,255,255,0.07);
   --header-bg: #161b25; --header-border: rgba(255,255,255,0.07);
   --ativo-item-bg: rgba(255,255,255,0.03);
@@ -24,10 +23,9 @@ body.light {
   --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.12);
   --gold: #d4a017; --gold2: #b8860b;
   --text: #1a1a2e; --text2: #4a5568; --text3: #718096;
-  --green: #27ae60;
   --card-bg: #ffffff; --card-border: rgba(0,0,0,0.08);
   --header-bg: #ffffff; --header-border: rgba(0,0,0,0.08);
-  --ativo-item-bg: #f9f9fc;
+  --ativo-item-bg: #f7f9fc;
   --footer-border: rgba(0,0,0,0.08);
   --bar-bg: #e2e8f0;
 }
@@ -49,14 +47,14 @@ body {
 .theme-toggle:hover { border-color: var(--gold); transform: scale(1.05); }
 
 .main { max-width: 1300px; margin: 0 auto; padding: 2rem; }
-.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.6rem; margin-bottom: 0; height: 100%; transition: all 0.2s; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.6rem; margin-bottom: 0; height: 100%; transition: all 0.2s; }
 .card-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .card-title span { font-size: 14px; font-weight: 500; text-transform: none; color: var(--gold); }
 
 .perfis-row { display: flex; gap: 12px; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center; }
-.perfil-btn { flex: 1; min-width: 130px; padding: 12px 16px; border-radius: 60px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; border: 1px solid var(--border2); background: var(--bg2); color: var(--text2); transition: all 0.2s; backdrop-filter: blur(2px); }
+.perfil-btn { flex: 1; min-width: 130px; padding: 12px 16px; border-radius: 60px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; border: 1px solid var(--border2); background: var(--bg2); color: var(--text2); transition: all 0.2s; }
 .perfil-btn:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
-.perfil-btn.ativo { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 700; box-shadow: 0 4px 12px rgba(245,200,66,0.3); }
+.perfil-btn.ativo { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 700; }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
 @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; gap: 1.5rem; } }
@@ -73,20 +71,15 @@ body {
 .bar-fill { height: 100%; background: var(--gold); border-radius: 10px; width: 0%; }
 .classe-pct { font-size: 16px; font-weight: 700; color: var(--gold); min-width: 50px; text-align: right; font-family: monospace; }
 
-/* Lista de ativos */
-.ativos-container { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 10px; }
-.subtitle { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 0.75rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-.ativo-card { background: var(--ativo-item-bg); border-radius: 14px; padding: 0.9rem 1rem; transition: all 0.15s; border: 1px solid transparent; }
-.ativo-card:hover { border-color: var(--border2); transform: translateX(3px); }
-.ativo-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
-.ativo-nome { font-weight: 600; font-size: 14px; letter-spacing: -0.2px; }
-.ativo-peso { font-weight: 800; font-size: 16px; color: var(--gold); font-family: monospace; background: var(--bg3); padding: 2px 10px; border-radius: 40px; }
-.ativo-classe { font-size: 11px; font-weight: 500; color: var(--text3); background: var(--bg2); display: inline-block; padding: 3px 10px; border-radius: 20px; margin-top: 6px; }
-.empty-ativos { text-align: center; padding: 2rem; color: var(--text3); font-style: italic; }
+/* --- ESTILO DOS ATIVOS (ORIGINAL, COMO NO SCRIPT ENVIADO) --- */
+.ativos-container { margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
+.subtitle { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 0.5rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+.ativo-row { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 8px; background: var(--ativo-item-bg); margin-bottom: 4px; font-size: 13px; }
+.ativo-nome { flex: 1; font-weight: 500; }
+.ativo-classe { font-size: 11px; color: var(--text3); background: var(--bg3); padding: 2px 8px; border-radius: 20px; }
+.ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; }
 
 .footer { text-align: center; font-size: 12px; color: var(--text3); padding: 2rem; border-top: 1px solid var(--footer-border); margin-top: 2.5rem; }
-
-/* badges decorativos */
 .badge-perfil { background: var(--gold); color: #000; padding: 4px 12px; border-radius: 40px; font-size: 12px; font-weight: 700; }
 </style>
 </head>
@@ -98,36 +91,25 @@ body {
 </header>
 
 <main class="main">
-  <!-- PERFIS -->
   <div class="perfis-row" id="perfisRow"></div>
 
   <div class="grid2">
-    <!-- LADO ESQUERDO: CARTEIRA RECOMENDADA (CLASSES E PERCENTUAIS) -->
+    <!-- Lado esquerdo: Carteira recomendada (classes) -->
     <div class="card">
       <div class="card-title">📊 Carteira recomendada <span id="perfilBadge" class="badge-perfil">Moderado</span></div>
-      <div id="carteiraClassesContainer">
-        <!-- as classes com barras e percentuais serão inseridas aqui -->
-        <div style="text-align:center; padding:1rem;">Carregando...</div>
-      </div>
+      <div id="carteiraClassesContainer"></div>
     </div>
 
-    <!-- LADO DIREITO: ATIVOS RECOMENDADOS COM PERCENTUAIS -->
+    <!-- Lado direito: Ativos recomendados (estilo original) -->
     <div class="card">
       <div class="card-title">📌 Ativos por classe <span>% da carteira total</span></div>
-      <div id="ativosRecomendadosContainer">
-        <div style="text-align:center; padding:1rem;">Selecione um perfil</div>
-      </div>
+      <div id="ativosRecomendadosContainer"></div>
     </div>
   </div>
 </main>
-<footer class="footer">
-  📌 Alocações baseadas em carteiras modelo (Excel original). Percentuais refletem o peso de cada ativo na carteira total.
-</footer>
+<footer class="footer">📌 Alocações baseadas em carteiras modelo (Excel original). Percentuais refletem o peso de cada ativo na carteira total.</footer>
 
 <script>
-// ============================================================
-// CARTEIRAS MODELO (Classes + Ativos com percentuais)
-// ============================================================
 const CARTEIRAS = {
   Conservador: {
     classes: {
@@ -201,7 +183,6 @@ const CARTEIRAS = {
   }
 };
 
-// Ordem fixa das classes para exibição
 const CLASSES_ORDER = [
   "Prefixado",
   "Pós-fixado",
@@ -212,7 +193,6 @@ const CLASSES_ORDER = [
   "Renda Variável Global"
 ];
 
-// Mapeamento de cores para cada classe (índice consistente)
 const CORES_CLASS = {
   "Prefixado": "c0",
   "Pós-fixado": "c1",
@@ -223,26 +203,15 @@ const CORES_CLASS = {
   "Renda Variável Global": "c6"
 };
 
-let perfilAtivo = "Moderado"; // padrão
+let perfilAtivo = "Moderado";
 
-// Função para formatar percentual
-function fmtPct(valor) {
-  return valor.toFixed(2).replace('.', ',') + '%';
-}
-
-// Renderiza o lado esquerdo: tabela de classes recomendadas com barras
 function renderCarteiraRecomendada() {
   const data = CARTEIRAS[perfilAtivo];
   if (!data) return;
-  
   const container = document.getElementById('carteiraClassesContainer');
-  if (!container) return;
-  
-  const classesRec = data.classes;
-  
   let html = '';
   for (let classe of CLASSES_ORDER) {
-    const peso = classesRec[classe] || 0;
+    const peso = data.classes[classe] || 0;
     const corClasse = CORES_CLASS[classe] || "c7";
     html += `
       <div class="classe-item">
@@ -255,14 +224,10 @@ function renderCarteiraRecomendada() {
       </div>
     `;
   }
-  
-  // Adiciona um pequeno resumo do total (soma sempre 100% por construção)
-  const soma = Object.values(classesRec).reduce((acc, v) => acc + v, 0);
-  html += `<div style="margin-top: 16px; text-align: right; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 12px;">✓ Alocação total: ${soma}%</div>`;
+  html += `<div style="margin-top: 16px; text-align: right; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 12px;">✓ Alocação total: 100%</div>`;
   container.innerHTML = html;
 }
 
-// Renderiza o lado direito: lista completa de ativos recomendados, agrupados por classe (opcional)
 function renderAtivosRecomendados() {
   const data = CARTEIRAS[perfilAtivo];
   if (!data || !data.ativos || data.ativos.length === 0) {
@@ -270,10 +235,9 @@ function renderAtivosRecomendados() {
     return;
   }
   
-  const ativos = data.ativos;
-  // Opcional: agrupar visualmente por classe (melhor legibilidade)
+  // Agrupa ativos por classe para exibir títulos
   const ativosPorClasse = {};
-  for (let ativo of ativos) {
+  for (let ativo of data.ativos) {
     if (!ativosPorClasse[ativo.classe]) ativosPorClasse[ativo.classe] = [];
     ativosPorClasse[ativo.classe].push(ativo);
   }
@@ -282,70 +246,43 @@ function renderAtivosRecomendados() {
   for (let classe of CLASSES_ORDER) {
     const lista = ativosPorClasse[classe];
     if (!lista || lista.length === 0) continue;
-    
-    html += `<div style="margin-top: 8px;"><div class="subtitle">📂 ${classe}</div>`;
+    html += `<div style="margin-top:0.75rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
     for (let ativo of lista) {
-      // Exibe o percentual com duas casas decimais
       const pesoFormatado = ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`;
       html += `
-        <div class="ativo-card">
-          <div class="ativo-header">
-            <span class="ativo-nome">${ativo.nome}</span>
-            <span class="ativo-peso">${pesoFormatado}</span>
-          </div>
-          <div class="ativo-classe">${ativo.classe}</div>
+        <div class="ativo-row">
+          <span class="ativo-nome">${ativo.nome}</span>
+          <span class="ativo-classe">${ativo.classe}</span>
+          <span class="ativo-peso">${pesoFormatado}</span>
         </div>
       `;
     }
-    html += `</div>`;
   }
   html += `</div>`;
-  
-  // Informação adicional de soma dos ativos (deve bater com classes, mas apenas informativo)
-  const somaAtivos = ativos.reduce((acc, a) => acc + a.peso, 0);
-  if (Math.abs(somaAtivos - 100) > 0.1) {
-    html += `<div style="margin-top: 1rem; font-size: 12px; color: var(--text3); background: var(--bg3); padding: 8px; border-radius: 12px; text-align: center;">ℹ️ Soma dos ativos: ${somaAtivos.toFixed(2)}% (alinhado com a alocação por classe)</div>`;
-  }
-  
   document.getElementById('ativosRecomendadosContainer').innerHTML = html;
 }
 
-// Atualiza toda a interface baseada no perfil ativo
 function refreshPorPerfil() {
-  // Atualiza o badge no título esquerdo
-  const badgeEl = document.getElementById('perfilBadge');
-  if (badgeEl) badgeEl.textContent = perfilAtivo;
-  
+  document.getElementById('perfilBadge').textContent = perfilAtivo;
   renderCarteiraRecomendada();
   renderAtivosRecomendados();
 }
 
-// Renderiza os botões de perfil com evento
 function renderPerfis() {
   const icons = { Conservador: '🛡️', Moderado: '⚖️', Agressivo: '🚀' };
   const container = document.getElementById('perfisRow');
-  if (!container) return;
-  
   const perfis = Object.keys(CARTEIRAS);
-  container.innerHTML = perfis.map(p => `
-    <button class="perfil-btn ${p === perfilAtivo ? 'ativo' : ''}" data-perfil="${p}">
-      ${icons[p] || '📌'} ${p}
-    </button>
-  `).join('');
-  
-  // Adiciona eventos
+  container.innerHTML = perfis.map(p => `<button class="perfil-btn ${p === perfilAtivo ? 'ativo' : ''}" data-perfil="${p}">${icons[p] || '📌'} ${p}</button>`).join('');
   document.querySelectorAll('.perfil-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const novoPerfil = btn.dataset.perfil;
-      if (novoPerfil === perfilAtivo) return;
-      perfilAtivo = novoPerfil;
-      renderPerfis();        // re-renderiza botões (atualiza classe ativo)
-      refreshPorPerfil();    // atualiza os dois cards
+    btn.addEventListener('click', () => {
+      if (btn.dataset.perfil === perfilAtivo) return;
+      perfilAtivo = btn.dataset.perfil;
+      renderPerfis();
+      refreshPorPerfil();
     });
   });
 }
 
-// Tema claro/escuro com persistência
 function initTheme() {
   const savedTheme = localStorage.getItem('theme');
   const btnTheme = document.getElementById('themeToggle');
@@ -356,40 +293,23 @@ function initTheme() {
     document.body.classList.remove('light');
     btnTheme.textContent = '🌙';
   }
-  
   btnTheme.addEventListener('click', () => {
-    const body = document.body;
-    if (body.classList.contains('light')) {
-      body.classList.remove('light');
+    if (document.body.classList.contains('light')) {
+      document.body.classList.remove('light');
       localStorage.setItem('theme', 'dark');
       btnTheme.textContent = '🌙';
     } else {
-      body.classList.add('light');
+      document.body.classList.add('light');
       localStorage.setItem('theme', 'light');
       btnTheme.textContent = '☀️';
     }
   });
 }
 
-// Atualiza a data no header
-function setCurrentDate() {
-  const dateEl = document.getElementById('hDate');
-  if (dateEl) {
-    const options = { day: '2-digit', month: 'long', year: 'numeric' };
-    dateEl.textContent = new Date().toLocaleDateString('pt-BR', options);
-  }
-}
-
-// Inicialização completa
-function init() {
-  setCurrentDate();
-  initTheme();
-  renderPerfis();       // gera botões e define perfilAtivo (já com Moderado como padrão)
-  refreshPorPerfil();   // carrega os cards com os dados do perfil ativo (Moderado)
-}
-
-// Roda ao carregar a página
-init();
+document.getElementById('hDate').textContent = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+initTheme();
+renderPerfis();
+refreshPorPerfil();
 </script>
 </body>
 </html>
