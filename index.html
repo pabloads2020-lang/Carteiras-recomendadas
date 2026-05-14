@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PBF · Rebalanceador + Relatório XP</title>
+<title>PBF · Rebalanceador + Relatório XP (PDF no topo)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
@@ -49,7 +49,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .header-right { display: flex; align-items: center; gap: 1rem; }
 .header-date { font-size: 13px; color: var(--text3); }
 .theme-toggle { background: var(--bg3); border: 1px solid var(--border2); border-radius: 30px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
-.theme-toggle:hover { border-color: var(--gold); transform: scale(1.05); }
 .main { max-width: 1300px; margin: 0 auto; padding: 2rem; }
 .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
 .card-title { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
@@ -63,15 +62,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
 .btn-ghost:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
 .btn-full { background: var(--gold); color: #000; font-size: 15px; font-weight: 600; width: 100%; padding: 12px; justify-content: center; margin-top: 1rem; border-radius: 10px; }
-.btn-full:hover { background: var(--gold2); transform: translateY(-1px); }
 .status { display: none; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 8px; font-size: 14px; margin-top: 0.75rem; }
 .status.show { display: flex; }
 .status-ok { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46, 204, 113, 0.25); }
 .status-err { background: var(--red-bg); color: var(--red); border: 1px solid rgba(231, 76, 60, 0.25); }
 .patrim-tag { display: none; align-items: center; gap: 6px; margin-top: 0.6rem; background: rgba(245, 200, 66, 0.1); border: 1px solid rgba(245, 200, 66, 0.25); border-radius: 20px; padding: 6px 14px; font-size: 14px; font-weight: 600; color: var(--gold); width: fit-content; }
-.patrim-tag.show { display: flex; }
 .btn-debug { background: transparent; border: 1px solid var(--border2); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 500; cursor: pointer; color: var(--text2); display: inline-flex; align-items: center; gap: 6px; margin-top: 1rem; }
-.btn-debug:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,200,66,0.1); }
 .debug-box { display: none; background: var(--debug-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 12px; max-height: 400px; overflow-y: auto; white-space: pre-wrap; margin-top: 0.5rem; font-family: monospace; }
 .debug-box.show { display: block; }
 .overlay { display: none; position: fixed; inset: 0; background: var(--overlay-bg); z-index: 200; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
@@ -88,7 +84,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .dot8 { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .c0 { background: #f5c842; } .c1 { background: #3498db; } .c2 { background: #2ecc71; }
 .c3 { background: #9b59b6; } .c4 { background: #e74c3c; } .c5 { background: #1abc9c; }
-.c6 { background: #e67e22; } .c7 { background: #95a5a6; }
+.c6 { background: #e67e22; } .c7 { background: #95a5a6; } .c8 { background: #e84393; }
 .classe-nome { flex: 1; font-size: 14px; }
 .classe-input { width: 80px; padding: 8px 10px; text-align: right; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 7px; color: var(--text); font-size: 15px; font-weight: 600; }
 .classe-input:focus { outline: none; border-color: var(--gold); }
@@ -127,7 +123,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .patrim-input { background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 8px 12px; font-size: 15px; width: 220px; color: var(--text); }
 .relatorio-texto { font-size: 14px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
 .cenario-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 12px; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; resize: vertical; margin-top: 0.5rem; }
-.cenario-textarea:focus { outline: none; border-color: var(--gold); }
+.perfis-row { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.perfil-btn { flex: 1; min-width: 100px; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; border: 1px solid var(--border2); background: var(--bg2); color: var(--text2); }
+.perfil-btn:hover { border-color: var(--gold); color: var(--gold); }
+.perfil-btn.ativo { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -140,50 +139,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </header>
 
 <main class="main">
-  <!-- Botões de perfil -->
-  <div class="perfis-row" id="perfisRow" style="display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap;"></div>
-
-  <div class="grid2">
-    <!-- ALOCAÇÃO ATUAL (EDITÁVEL) -->
-    <div class="card">
-      <div class="card-title">📊 Alocação atual</div>
-      <div id="inputsAtual"></div>
-      <div id="totalBar" class="total-bar total-err"><span>Total</span><span id="totalVal">0,00%</span></div>
-      <div class="patrim-row">
-        <span style="font-size:13px; color:var(--text2)">💰 Patrimônio total (R$):</span>
-        <input type="text" id="patrimonioInput" class="patrim-input" placeholder="0,00" value="1000000">
-      </div>
-    </div>
-
-    <!-- CARTEIRA RECOMENDADA (PERFIL SELECIONADO) -->
-    <div class="card">
-      <div class="card-title">🎯 Carteira recomendada · <span id="perfilLabel" style="color:var(--gold)">Moderado</span></div>
-      <div id="tabelaAlvo"></div>
-      <div id="ativosAlvo" class="ativos-container"></div>
-      <button class="btn btn-full" id="btnAnalisar">⚖️ Analisar rebalanceamento</button>
-    </div>
-  </div>
-
-  <!-- RESULTADO DO REBALANCEAMENTO -->
-  <div id="resultArea" class="card" style="display:none">
-    <div class="card-title">📋 Recomendações de movimentação</div>
-    <div id="listaRec"></div>
-    <div class="resumo-grid" id="resumoGrid"></div>
-    <div class="legenda">
-      <div class="legenda-item"><div class="dot8" style="background:var(--amber)"></div>Manter</div>
-      <div class="legenda-item"><div class="dot8" style="background:var(--green)"></div>Alocar (comprar)</div>
-      <div class="legenda-item"><div class="dot8" style="background:var(--red)"></div>Retirar (vender)</div>
-    </div>
-  </div>
-
-  <!-- ÁREA DO RELATÓRIO MENSAL (CENÁRIO + DESEMPENHO) -->
+  <!-- ========== 1. UPLOAD DO PDF (TOPO) ========== -->
   <div class="card">
-    <div class="card-title">📝 Cenário Macro do Mês</div>
-    <textarea id="textoCenario" class="cenario-textarea" rows="6">O mês de abril de 2026 foi marcado por uma consolidação das expectativas econômicas globais e locais. No Brasil, o foco permaneceu na trajetória da inflação e no compromisso fiscal, fatores que influenciam diretamente o ritmo de queda da taxa Selic pelo Banco Central. No cenário global, a resiliência da economia norte-americana e a manutenção dos juros em patamares elevados pelo Fed continuam ditando o ritmo dos mercados, somadas às tensões geopolíticas que adicionam volatilidade aos preços das commodities e à percepção de risco dos investidores.</textarea>
-  </div>
-
-  <div class="card">
-    <div class="card-title">📄 Importar relatório XP (PDF)</div>
+    <div class="card-title">📄 1. Importar relatório XP (PDF)</div>
     <div class="upload-row">
       <label class="file-label" for="filePdf">📎 <span id="fileName">Selecionar arquivo PDF...</span></label>
       <input type="file" id="filePdf" accept=".pdf">
@@ -196,20 +154,58 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div id="debugBox" class="debug-box"></div>
   </div>
 
+  <!-- ========== 2. PERFIS E COMPARAÇÃO ========== -->
+  <div class="perfis-row" id="perfisRow"></div>
+
+  <div class="grid2">
+    <!-- ALOCAÇÃO ATUAL (PREECHIDA PELO PDF) -->
+    <div class="card">
+      <div class="card-title">📊 2. Alocação atual (preenchida pelo PDF)</div>
+      <div id="inputsAtual"></div>
+      <div id="totalBar" class="total-bar total-err"><span>Total</span><span id="totalVal">0,00%</span></div>
+      <div class="patrim-row">
+        <span style="font-size:13px; color:var(--text2)">💰 Patrimônio total (R$):</span>
+        <input type="text" id="patrimonioInput" class="patrim-input" placeholder="0,00" value="1000000">
+      </div>
+    </div>
+
+    <!-- CARTEIRA RECOMENDADA -->
+    <div class="card">
+      <div class="card-title">🎯 3. Carteira recomendada · <span id="perfilLabel" style="color:var(--gold)">Moderado</span></div>
+      <div id="tabelaAlvo"></div>
+      <div id="ativosAlvo" class="ativos-container"></div>
+      <button class="btn btn-full" id="btnAnalisar">⚖️ 4. Analisar rebalanceamento</button>
+    </div>
+  </div>
+
+  <!-- RESULTADO DO REBALANCEAMENTO -->
+  <div id="resultArea" class="card" style="display:none">
+    <div class="card-title">📋 5. Recomendações de movimentação</div>
+    <div id="listaRec"></div>
+    <div class="resumo-grid" id="resumoGrid"></div>
+    <div class="legenda">
+      <div class="legenda-item"><div class="dot8" style="background:var(--amber)"></div>Manter</div>
+      <div class="legenda-item"><div class="dot8" style="background:var(--green)"></div>Alocar (comprar)</div>
+      <div class="legenda-item"><div class="dot8" style="background:var(--red)"></div>Retirar (vender)</div>
+    </div>
+  </div>
+
+  <!-- RELATÓRIO MENSAL (CENÁRIO + DESEMPENHO) -->
   <div class="card">
-    <div class="card-title">📈 Relatório Mensal - Análise PBF</div>
-    <div id="relatorioConteudo" class="relatorio-container" style="background: var(--relatorio-bg); border-radius: 12px; padding: 1.5rem;">
-      <div style="text-align: center; padding: 2rem; color: var(--text3);">⚡ Importe um PDF para gerar o relatório automático</div>
+    <div class="card-title">📝 6. Cenário Macro do Mês</div>
+    <textarea id="textoCenario" class="cenario-textarea" rows="5">O mês de abril de 2026 foi marcado por uma consolidação das expectativas econômicas globais e locais. No Brasil, o foco permaneceu na trajetória da inflação e no compromisso fiscal, fatores que influenciam diretamente o ritmo de queda da taxa Selic pelo Banco Central. No cenário global, a resiliência da economia norte-americana e a manutenção dos juros em patamares elevados pelo Fed continuam ditando o ritmo dos mercados, somadas às tensões geopolíticas que adicionam volatilidade aos preços das commodities e à percepção de risco dos investidores.</textarea>
+    <div class="card-title" style="margin-top: 1rem;">📈 Relatório Automático</div>
+    <div id="relatorioConteudo" style="background: var(--relatorio-bg); border-radius: 12px; padding: 1.5rem;">
+      <div style="text-align: center; color: var(--text3);">⚡ Importe um PDF para gerar o relatório automático</div>
     </div>
     <button class="btn btn-ghost" id="btnCopiar" style="margin-top: 1rem; width: auto;">📋 Copiar relatório (WhatsApp)</button>
   </div>
 </main>
-
 <footer class="footer">📌 Material informativo — as alocações por ativo seguem as carteiras recomendadas do Excel. Para atualizar pesos/ativos, edite a constante CARTEIRAS no início do script.</footer>
 
 <script>
 // ============================================================
-// 🛠️ CARTEIRAS RECOMENDADAS (extraídas do Excel)
+// 🛠️ CARTEIRAS RECOMENDADAS (fácil de editar)
 // ============================================================
 const CARTEIRAS = {
   Conservador: {
@@ -260,34 +256,34 @@ const CARTEIRAS = {
   }
 };
 
-// Classes de ativos (ordem para exibição)
-const CLASSES = ["Prefixado", "Pós-fixado", "Inflação", "Multimercado", "Renda Variável", "Renda Fixa Global", "Renda Variável Global"];
+// ========== CONFIGURAÇÕES GLOBAIS ==========
+// Classes monitoradas (todas as que podem aparecer no PDF)
+const CLASSES_ATIVOS = ["Prefixado", "Pós-fixado", "Inflação", "Multimercado", "Renda Variável", "Renda Fixa Global", "Renda Variável Global"];
 const CORES = ["c0","c1","c2","c3","c4","c5","c6"];
 
 let perfilAtivo = "Moderado";
 let inputsMap = {};
 
-// ========== FUNÇÕES AUXILIARES ==========
 function fmtPct(v) { return v.toFixed(2).replace('.', ',') + ' %'; }
 function fmtBRL(v) { return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits: 2}); }
 function setStatus(msg, tipo) { 
   const el = document.getElementById('status'); 
   el.innerHTML = msg; 
   el.className = 'status show status-' + tipo; 
-  setTimeout(() => el.classList.remove('show'), 4000); 
+  setTimeout(() => el.classList.remove('show'), 5000); 
 }
 function atualizarTotal() {
   let t = 0;
-  CLASSES.forEach(c => { t += parseFloat(inputsMap[c]?.value || 0) || 0; });
+  CLASSES_ATIVOS.forEach(c => { t += parseFloat(inputsMap[c]?.value || 0) || 0; });
   document.getElementById('totalVal').textContent = fmtPct(t);
   document.getElementById('totalBar').className = 'total-bar ' + (Math.abs(t - 100) < 1 ? 'total-ok' : 'total-err');
 }
 
-// ========== RENDERIZAÇÃO DA ALOCAÇÃO ATUAL (INPUTS) ==========
+// ========== RENDERIZAÇÃO DOS INPUTS (ALOCAÇÃO ATUAL) ==========
 function renderInputs() {
   const container = document.getElementById('inputsAtual');
   container.innerHTML = '';
-  CLASSES.forEach((classe, idx) => {
+  CLASSES_ATIVOS.forEach((classe, idx) => {
     const row = document.createElement('div');
     row.className = 'classe-row';
     row.innerHTML = `
@@ -308,7 +304,7 @@ function renderRecomendacao() {
   const rec = CARTEIRAS[perfilAtivo];
   document.getElementById('perfilLabel').textContent = perfilAtivo;
   const containerAlvo = document.getElementById('tabelaAlvo');
-  containerAlvo.innerHTML = CLASSES.map((c, i) => {
+  containerAlvo.innerHTML = CLASSES_ATIVOS.map((c, i) => {
     const peso = rec.classes[c] || 0;
     return `
       <div class="alvo-row">
@@ -322,8 +318,8 @@ function renderRecomendacao() {
   
   const containerAtivos = document.getElementById('ativosAlvo');
   if (rec.ativos && rec.ativos.length) {
-    let html = `<div class="subtitle">📌 Detalhamento por ativo (percentual da carteira total)</div>`;
-    for (let classe of CLASSES) {
+    let html = `<div class="subtitle">📌 Ativos sugeridos (percentual da carteira total)</div>`;
+    for (let classe of CLASSES_ATIVOS) {
       const ativosDaClasse = rec.ativos.filter(a => a.classe === classe);
       if (ativosDaClasse.length === 0) continue;
       html += `<div style="margin-top:0.75rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
@@ -343,12 +339,12 @@ function renderRecomendacao() {
   }
 }
 
-// ========== BOTÕES DE PERFIL ==========
+// ========== PERFIS ==========
 function renderPerfis() {
   const icons = { Conservador: '🛡️', Moderado: '⚖️', Agressivo: '🚀' };
   const container = document.getElementById('perfisRow');
   container.innerHTML = Object.keys(CARTEIRAS).map(p => `
-    <button class="perfil-btn ${p === perfilAtivo ? 'ativo' : ''}" data-perfil="${p}" style="flex:1; min-width:100px; padding:10px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; text-align:center; border:1px solid var(--border2); background:var(--bg2); color:var(--text2);">
+    <button class="perfil-btn ${p === perfilAtivo ? 'ativo' : ''}" data-perfil="${p}">
       ${icons[p]} ${p}
     </button>
   `).join('');
@@ -366,7 +362,7 @@ function renderPerfis() {
 function analisar() {
   let totalAtual = 0;
   const atual = {};
-  CLASSES.forEach(c => {
+  CLASSES_ATIVOS.forEach(c => {
     atual[c] = parseFloat(inputsMap[c]?.value || 0) || 0;
     totalAtual += atual[c];
   });
@@ -380,7 +376,7 @@ function analisar() {
   if (isNaN(patrimonio)) patrimonio = 0;
   
   let nManter = 0, nAlocar = 0, nRetirar = 0;
-  const htmlRows = CLASSES.map((c, idx) => {
+  const htmlRows = CLASSES_ATIVOS.map((c, idx) => {
     const atualPct = atual[c] || 0;
     const alvoPct = alvo[c] || 0;
     const diff = alvoPct - atualPct;
@@ -427,7 +423,7 @@ function analisar() {
   resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// ========== PARSER DO PDF (RELATÓRIO XP) ==========
+// ========== PARSER DO PDF (MELHORADO) ==========
 let debugLines = [];
 function dbg(txt) { debugLines.push(txt); document.getElementById('debugBox').textContent = debugLines.join('\n'); }
 function clearDebug() { debugLines = []; document.getElementById('debugBox').textContent = ''; }
@@ -446,12 +442,29 @@ async function extrairDadosPDF(file) {
     mesReferencia: "",
     anoReferencia: ""
   };
+  
+  // Mapeamento de nomes encontrados no PDF para os nomes padronizados
+  const mapClasse = {
+    'PósFixado': 'Pós-fixado',
+    'PréFixado': 'Prefixado',
+    'Inflação': 'Inflação',
+    'RendaVariávelBrasil': 'Renda Variável',
+    'RendaVariávelGlobal': 'Renda Variável Global',
+    'RendaFixaGlobal': 'Renda Fixa Global',
+    'Multimercado': 'Multimercado',
+    'Alternativo': 'Alternativo',
+    'Caixa': 'Caixa',
+    'Proventos': 'Proventos',
+    'FundosListados': 'Fundos Listados'
+  };
+  
   for (let p = 1; p <= Math.min(pdf.numPages, 6); p++) {
     let page = await pdf.getPage(p);
     let textContent = await page.getTextContent();
     let textoOriginal = textContent.items.map(item => item.str).join(' ');
     let textoLimpo = superLimpeza(textoOriginal);
     dbg(`\n--- PÁGINA ${p} (LIMPA) ---\n${textoLimpo.substring(0, 1000)}`);
+    
     if (p === 1) {
       let dataMatch = textoLimpo.match(/DataDeReferência(\d{2})\/(\d{2})\/(\d{4})/);
       if (dataMatch) {
@@ -461,11 +474,13 @@ async function extrairDadosPDF(file) {
         dbg(`📅 Data: ${dados.mesReferencia}/${dados.anoReferencia}`);
       }
     }
+    
     let patMatch = textoLimpo.match(/PATRIMÔNIOTOTALBRUTO:R\$([\d\.]+,\d{2})/i);
     if (patMatch) {
       dados.patrimonio = patMatch[1];
       dbg(`💰 Patrimônio: R$ ${dados.patrimonio}`);
     }
+    
     let rentMatch = textoLimpo.match(/R\$[\d\.]+,\d{2}([\d,]+)%([\d,]+)%/i);
     if (rentMatch && !dados.rentabilidadeMensal) {
       dados.rentabilidadeMensal = rentMatch[1].replace(',', '.');
@@ -473,24 +488,20 @@ async function extrairDadosPDF(file) {
       dbg(`📈 Rentabilidade Mensal: ${dados.rentabilidadeMensal}%`);
       dbg(`📊 %CDI: ${dados.pctCdi}%`);
     }
+    
+    // Regex mais abrangente para capturar classes com alocação e retorno
     let regexClasse = /([A-Za-zÀ-Úà-û]+?)\((\d+),(\d+)%\)R\$[\d\.]+,\d+(-?\d+),(\d+)%/gi;
     let match;
     while ((match = regexClasse.exec(textoLimpo)) !== null) {
-      let nome = match[1];
+      let nomeRaw = match[1];
       let alocacao = match[2] + ',' + match[3];
       let retorno = match[4] + ',' + match[5];
-      if (nome === 'PósFixado') nome = 'Pós-fixado';
-      else if (nome === 'PréFixado') nome = 'Prefixado';
-      else if (nome === 'Inflação') nome = 'Inflação';
-      else if (nome === 'RendaVariávelBrasil') nome = 'Renda Variável';
-      else if (nome === 'RendaVariávelGlobal') nome = 'Renda Variável Global';
-      else if (nome === 'RendaFixaGlobal') nome = 'Renda Fixa Global';
-      else if (nome === 'Alternativo') nome = 'Alternativo';
-      else if (nome === 'Multimercado') nome = 'Multimercado';
-      if (CLASSES.includes(nome) && !dados.alocacoes[nome]) {
-        dados.alocacoes[nome] = alocacao;
-        dados.retornos[nome] = retorno;
-        dbg(`✅ ${nome}: alocação ${alocacao}%, retorno ${retorno}%`);
+      let nomeNormalizado = mapClasse[nomeRaw] || nomeRaw;
+      // Só armazena se for uma das classes que nos interessam (ou pode armazenar todas, mas vamos filtrar depois)
+      if (!dados.alocacoes[nomeNormalizado]) {
+        dados.alocacoes[nomeNormalizado] = alocacao;
+        dados.retornos[nomeNormalizado] = retorno;
+        dbg(`✅ ${nomeNormalizado}: alocação ${alocacao}%, retorno ${retorno}%`);
       }
     }
   }
@@ -507,7 +518,7 @@ function gerarRelatorioTexto(dados) {
   let desempenhoTexto = "";
   let classesList = [];
   for (let nome in dados.alocacoes) {
-    if (dados.alocacoes[nome]) {
+    if (dados.alocacoes[nome] && CLASSES_ATIVOS.includes(nome)) {
       let alocNum = parseFloat(dados.alocacoes[nome].replace(',', '.'));
       classesList.push({ nome: nome, alocacao: alocNum, alocStr: dados.alocacoes[nome], retorno: dados.retornos[nome] });
     }
@@ -545,7 +556,7 @@ document.getElementById('btnCopiar').addEventListener('click', async () => {
   const texto = document.getElementById('relatorioConteudo').innerText;
   try {
     await navigator.clipboard.writeText(texto);
-    setStatus('✅ Texto copiado para a área de transferência!', 'ok');
+    setStatus('✅ Relatório copiado para a área de transferência!', 'ok');
   } catch (err) {
     setStatus('❌ Erro ao copiar texto', 'err');
   }
@@ -557,15 +568,16 @@ document.getElementById('btnImportar').addEventListener('click', async () => {
   document.getElementById('overlay').classList.add('show');
   try {
     let dados = await extrairDadosPDF(file);
-    // Preencher alocação atual com os dados extraídos
-    for (let classe of CLASSES) {
+    // Preencher alocação atual apenas com as classes reconhecidas
+    for (let classe of CLASSES_ATIVOS) {
       if (dados.alocacoes[classe]) {
         let valor = parseFloat(dados.alocacoes[classe].replace(',', '.'));
         if (!isNaN(valor)) inputsMap[classe].value = valor.toFixed(2);
+      } else {
+        inputsMap[classe].value = '0';
       }
     }
     atualizarTotal();
-    // Patrimônio
     if (dados.patrimonio) {
       let patrimonioNum = parseFloat(dados.patrimonio.replace(/\./g, '').replace(',', '.'));
       document.getElementById('patrimonioInput').value = patrimonioNum.toFixed(2).replace('.', ',');
@@ -583,13 +595,13 @@ document.getElementById('btnImportar').addEventListener('click', async () => {
   }
 });
 document.getElementById('btnLimpar').addEventListener('click', () => {
-  CLASSES.forEach(c => { if (inputsMap[c]) inputsMap[c].value = '0'; });
+  CLASSES_ATIVOS.forEach(c => { if (inputsMap[c]) inputsMap[c].value = '0'; });
   document.getElementById('patrimonioInput').value = '1000000';
   atualizarTotal();
   document.getElementById('resultArea').style.display = 'none';
   document.getElementById('status').classList.remove('show');
   document.getElementById('patrimTag').classList.remove('show');
-  document.getElementById('relatorioConteudo').innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text3);">⚡ Importe um PDF para gerar o relatório automático</div>';
+  document.getElementById('relatorioConteudo').innerHTML = '<div style="text-align: center; color: var(--text3);">⚡ Importe um PDF para gerar o relatório automático</div>';
   clearDebug();
   document.getElementById('filePdf').value = '';
   document.getElementById('fileName').textContent = 'Selecionar arquivo PDF...';
