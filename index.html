@@ -11,7 +11,6 @@
   --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
   --gold: #f5c842; --gold2: #e0a800;
   --text: #e8eaf0; --text2: #8b93a7; --text3: #555e72;
-  --green: #2ecc71;
   --card-bg: #161b25; --card-border: rgba(255,255,255,0.07);
   --header-bg: #161b25; --header-border: rgba(255,255,255,0.07);
   --ativo-item-bg: rgba(255,255,255,0.03);
@@ -71,13 +70,31 @@ body {
 .bar-fill { height: 100%; background: var(--gold); border-radius: 10px; width: 0%; }
 .classe-pct { font-size: 16px; font-weight: 700; color: var(--gold); min-width: 50px; text-align: right; font-family: monospace; }
 
-/* --- ESTILO DOS ATIVOS (ORIGINAL, COMO NO SCRIPT ENVIADO) --- */
+/* --- ESTILO DOS ATIVOS (ORIGINAL, MAS COM BADGES COLORIDOS) --- */
 .ativos-container { margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
 .subtitle { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 0.5rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
 .ativo-row { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 8px; background: var(--ativo-item-bg); margin-bottom: 4px; font-size: 13px; }
 .ativo-nome { flex: 1; font-weight: 500; }
-.ativo-classe { font-size: 11px; color: var(--text3); background: var(--bg3); padding: 2px 8px; border-radius: 20px; }
+/* Badges coloridos por classe */
+.ativo-classe {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 40px;
+  letter-spacing: 0.3px;
+  transition: all 0.1s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
 .ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; }
+
+/* Cores de fundo para cada badge (contraste automático com texto escuro ou claro) */
+.badge-prefixado { background: #f5c842; color: #1e1a0c; }
+.badge-posfixado { background: #3498db; color: #fff; }
+.badge-inflacao { background: #2ecc71; color: #0a2f1a; }
+.badge-multimercado { background: #9b59b6; color: #fff; }
+.badge-renda-variavel { background: #e74c3c; color: #fff; }
+.badge-renda-fixa-global { background: #1abc9c; color: #0a2f2a; }
+.badge-renda-variavel-global { background: #e67e22; color: #fff; }
 
 .footer { text-align: center; font-size: 12px; color: var(--text3); padding: 2rem; border-top: 1px solid var(--footer-border); margin-top: 2.5rem; }
 .badge-perfil { background: var(--gold); color: #000; padding: 4px 12px; border-radius: 40px; font-size: 12px; font-weight: 700; }
@@ -100,7 +117,7 @@ body {
       <div id="carteiraClassesContainer"></div>
     </div>
 
-    <!-- Lado direito: Ativos recomendados (estilo original) -->
+    <!-- Lado direito: Ativos recomendados (badges coloridos) -->
     <div class="card">
       <div class="card-title">📌 Ativos por classe <span>% da carteira total</span></div>
       <div id="ativosRecomendadosContainer"></div>
@@ -203,6 +220,17 @@ const CORES_CLASS = {
   "Renda Variável Global": "c6"
 };
 
+// Mapeamento das classes para os nomes das classes CSS dos badges
+const badgeClassMap = {
+  "Prefixado": "badge-prefixado",
+  "Pós-fixado": "badge-posfixado",
+  "Inflação": "badge-inflacao",
+  "Multimercado": "badge-multimercado",
+  "Renda Variável": "badge-renda-variavel",
+  "Renda Fixa Global": "badge-renda-fixa-global",
+  "Renda Variável Global": "badge-renda-variavel-global"
+};
+
 let perfilAtivo = "Moderado";
 
 function renderCarteiraRecomendada() {
@@ -249,10 +277,12 @@ function renderAtivosRecomendados() {
     html += `<div style="margin-top:0.75rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
     for (let ativo of lista) {
       const pesoFormatado = ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`;
+      // Classe do badge dinâmica
+      const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
       html += `
         <div class="ativo-row">
           <span class="ativo-nome">${ativo.nome}</span>
-          <span class="ativo-classe">${ativo.classe}</span>
+          <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
           <span class="ativo-peso">${pesoFormatado}</span>
         </div>
       `;
