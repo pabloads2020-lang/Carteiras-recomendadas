@@ -70,31 +70,75 @@ body {
 .bar-fill { height: 100%; background: var(--gold); border-radius: 10px; width: 0%; }
 .classe-pct { font-size: 16px; font-weight: 700; color: var(--gold); min-width: 50px; text-align: right; font-family: monospace; }
 
-/* --- ESTILO DOS ATIVOS (ORIGINAL, MAS COM BADGES COLORIDOS) --- */
+/* --- ESTILO DOS ATIVOS --- */
 .ativos-container { margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
 .subtitle { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 0.5rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
 .ativo-row { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 8px; background: var(--ativo-item-bg); margin-bottom: 4px; font-size: 13px; }
 .ativo-nome { flex: 1; font-weight: 500; }
-/* Badges coloridos por classe */
+
+/* BADGES ESTILO NEON / TRANSPARENTE COM BORDA E GLOW */
 .ativo-classe {
   font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
+  font-weight: 700;
+  padding: 4px 12px;
   border-radius: 40px;
   letter-spacing: 0.3px;
-  transition: all 0.1s;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  backdrop-filter: blur(1px);
+  transition: all 0.2s ease;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
-.ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; }
+.ativo-classe:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 8px currentColor;
+}
 
-/* Cores de fundo para cada badge (contraste automático com texto escuro ou claro) */
-.badge-prefixado { background: #f5c842; color: #1e1a0c; }
-.badge-posfixado { background: #3498db; color: #fff; }
-.badge-inflacao { background: #2ecc71; color: #0a2f1a; }
-.badge-multimercado { background: #9b59b6; color: #fff; }
-.badge-renda-variavel { background: #e74c3c; color: #fff; }
-.badge-renda-fixa-global { background: #1abc9c; color: #0a2f2a; }
-.badge-renda-variavel-global { background: #e67e22; color: #fff; }
+/* Cores neon/transparentes para cada classe */
+.badge-prefixado {
+  background: rgba(245, 200, 66, 0.15);
+  color: #f5c842;
+  border-color: rgba(245, 200, 66, 0.5);
+  text-shadow: 0 0 2px rgba(245, 200, 66, 0.3);
+}
+.badge-posfixado {
+  background: rgba(52, 152, 219, 0.15);
+  color: #5dade2;
+  border-color: rgba(52, 152, 219, 0.5);
+  text-shadow: 0 0 2px rgba(52, 152, 219, 0.3);
+}
+.badge-inflacao {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  border-color: rgba(46, 204, 113, 0.5);
+  text-shadow: 0 0 2px rgba(46, 204, 113, 0.3);
+}
+.badge-multimercado {
+  background: rgba(155, 89, 182, 0.15);
+  color: #b981e0;
+  border-color: rgba(155, 89, 182, 0.5);
+  text-shadow: 0 0 2px rgba(155, 89, 182, 0.3);
+}
+.badge-renda-variavel {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border-color: rgba(231, 76, 60, 0.5);
+  text-shadow: 0 0 2px rgba(231, 76, 60, 0.3);
+}
+.badge-renda-fixa-global {
+  background: rgba(26, 188, 156, 0.15);
+  color: #1abc9c;
+  border-color: rgba(26, 188, 156, 0.5);
+  text-shadow: 0 0 2px rgba(26, 188, 156, 0.3);
+}
+.badge-renda-variavel-global {
+  background: rgba(230, 126, 34, 0.15);
+  color: #e67e22;
+  border-color: rgba(230, 126, 34, 0.5);
+  text-shadow: 0 0 2px rgba(230, 126, 34, 0.3);
+}
+
+.ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; }
 
 .footer { text-align: center; font-size: 12px; color: var(--text3); padding: 2rem; border-top: 1px solid var(--footer-border); margin-top: 2.5rem; }
 .badge-perfil { background: var(--gold); color: #000; padding: 4px 12px; border-radius: 40px; font-size: 12px; font-weight: 700; }
@@ -111,13 +155,11 @@ body {
   <div class="perfis-row" id="perfisRow"></div>
 
   <div class="grid2">
-    <!-- Lado esquerdo: Carteira recomendada (classes) -->
     <div class="card">
       <div class="card-title">📊 Carteira recomendada <span id="perfilBadge" class="badge-perfil">Moderado</span></div>
       <div id="carteiraClassesContainer"></div>
     </div>
 
-    <!-- Lado direito: Ativos recomendados (badges coloridos) -->
     <div class="card">
       <div class="card-title">📌 Ativos por classe <span>% da carteira total</span></div>
       <div id="ativosRecomendadosContainer"></div>
@@ -129,15 +171,7 @@ body {
 <script>
 const CARTEIRAS = {
   Conservador: {
-    classes: {
-      "Prefixado": 15,
-      "Pós-fixado": 85,
-      "Inflação": 0,
-      "Multimercado": 0,
-      "Renda Variável": 0,
-      "Renda Fixa Global": 0,
-      "Renda Variável Global": 0
-    },
+    classes: { "Prefixado": 15, "Pós-fixado": 85, "Inflação": 0, "Multimercado": 0, "Renda Variável": 0, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
       { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 15 },
@@ -149,15 +183,7 @@ const CARTEIRAS = {
     ]
   },
   Moderado: {
-    classes: {
-      "Prefixado": 13,
-      "Pós-fixado": 58,
-      "Inflação": 20,
-      "Multimercado": 5,
-      "Renda Variável": 4,
-      "Renda Fixa Global": 0,
-      "Renda Variável Global": 0
-    },
+    classes: { "Prefixado": 13, "Pós-fixado": 58, "Inflação": 20, "Multimercado": 5, "Renda Variável": 4, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 13 },
       { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 12 },
@@ -175,15 +201,7 @@ const CARTEIRAS = {
     ]
   },
   Agressivo: {
-    classes: {
-      "Prefixado": 15,
-      "Pós-fixado": 50,
-      "Inflação": 24,
-      "Multimercado": 5,
-      "Renda Variável": 6,
-      "Renda Fixa Global": 0,
-      "Renda Variável Global": 0
-    },
+    classes: { "Prefixado": 15, "Pós-fixado": 50, "Inflação": 24, "Multimercado": 5, "Renda Variável": 6, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
       { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 8 },
@@ -201,34 +219,13 @@ const CARTEIRAS = {
 };
 
 const CLASSES_ORDER = [
-  "Prefixado",
-  "Pós-fixado",
-  "Inflação",
-  "Multimercado",
-  "Renda Variável",
-  "Renda Fixa Global",
-  "Renda Variável Global"
+  "Prefixado", "Pós-fixado", "Inflação", "Multimercado", "Renda Variável", "Renda Fixa Global", "Renda Variável Global"
 ];
-
-const CORES_CLASS = {
-  "Prefixado": "c0",
-  "Pós-fixado": "c1",
-  "Inflação": "c2",
-  "Multimercado": "c3",
-  "Renda Variável": "c4",
-  "Renda Fixa Global": "c5",
-  "Renda Variável Global": "c6"
-};
-
-// Mapeamento das classes para os nomes das classes CSS dos badges
+const CORES_CLASS = { "Prefixado": "c0", "Pós-fixado": "c1", "Inflação": "c2", "Multimercado": "c3", "Renda Variável": "c4", "Renda Fixa Global": "c5", "Renda Variável Global": "c6" };
 const badgeClassMap = {
-  "Prefixado": "badge-prefixado",
-  "Pós-fixado": "badge-posfixado",
-  "Inflação": "badge-inflacao",
-  "Multimercado": "badge-multimercado",
-  "Renda Variável": "badge-renda-variavel",
-  "Renda Fixa Global": "badge-renda-fixa-global",
-  "Renda Variável Global": "badge-renda-variavel-global"
+  "Prefixado": "badge-prefixado", "Pós-fixado": "badge-posfixado", "Inflação": "badge-inflacao",
+  "Multimercado": "badge-multimercado", "Renda Variável": "badge-renda-variavel",
+  "Renda Fixa Global": "badge-renda-fixa-global", "Renda Variável Global": "badge-renda-variavel-global"
 };
 
 let perfilAtivo = "Moderado";
@@ -241,16 +238,7 @@ function renderCarteiraRecomendada() {
   for (let classe of CLASSES_ORDER) {
     const peso = data.classes[classe] || 0;
     const corClasse = CORES_CLASS[classe] || "c7";
-    html += `
-      <div class="classe-item">
-        <div class="dot-class ${corClasse}"></div>
-        <span class="classe-nome">${classe}</span>
-        <div class="bar-wrapper">
-          <div class="bar-fill" style="width: ${peso}%;"></div>
-        </div>
-        <span class="classe-pct">${peso}%</span>
-      </div>
-    `;
+    html += `<div class="classe-item"><div class="dot-class ${corClasse}"></div><span class="classe-nome">${classe}</span><div class="bar-wrapper"><div class="bar-fill" style="width: ${peso}%;"></div></div><span class="classe-pct">${peso}%</span></div>`;
   }
   html += `<div style="margin-top: 16px; text-align: right; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 12px;">✓ Alocação total: 100%</div>`;
   container.innerHTML = html;
@@ -259,17 +247,14 @@ function renderCarteiraRecomendada() {
 function renderAtivosRecomendados() {
   const data = CARTEIRAS[perfilAtivo];
   if (!data || !data.ativos || data.ativos.length === 0) {
-    document.getElementById('ativosRecomendadosContainer').innerHTML = `<div class="empty-ativos">📭 Nenhum ativo detalhado para este perfil.</div>`;
+    document.getElementById('ativosRecomendadosContainer').innerHTML = `<div class="empty-ativos">📭 Nenhum ativo detalhado.</div>`;
     return;
   }
-  
-  // Agrupa ativos por classe para exibir títulos
   const ativosPorClasse = {};
   for (let ativo of data.ativos) {
     if (!ativosPorClasse[ativo.classe]) ativosPorClasse[ativo.classe] = [];
     ativosPorClasse[ativo.classe].push(ativo);
   }
-  
   let html = `<div class="ativos-container">`;
   for (let classe of CLASSES_ORDER) {
     const lista = ativosPorClasse[classe];
@@ -277,15 +262,8 @@ function renderAtivosRecomendados() {
     html += `<div style="margin-top:0.75rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
     for (let ativo of lista) {
       const pesoFormatado = ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`;
-      // Classe do badge dinâmica
       const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
-      html += `
-        <div class="ativo-row">
-          <span class="ativo-nome">${ativo.nome}</span>
-          <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
-          <span class="ativo-peso">${pesoFormatado}</span>
-        </div>
-      `;
+      html += `<div class="ativo-row"><span class="ativo-nome">${ativo.nome}</span><span class="ativo-classe ${badgeClasse}">${ativo.classe}</span><span class="ativo-peso">${pesoFormatado}</span></div>`;
     }
   }
   html += `</div>`;
@@ -316,13 +294,8 @@ function renderPerfis() {
 function initTheme() {
   const savedTheme = localStorage.getItem('theme');
   const btnTheme = document.getElementById('themeToggle');
-  if (savedTheme === 'light') {
-    document.body.classList.add('light');
-    btnTheme.textContent = '☀️';
-  } else {
-    document.body.classList.remove('light');
-    btnTheme.textContent = '🌙';
-  }
+  if (savedTheme === 'light') { document.body.classList.add('light'); btnTheme.textContent = '☀️'; }
+  else { document.body.classList.remove('light'); btnTheme.textContent = '🌙'; }
   btnTheme.addEventListener('click', () => {
     if (document.body.classList.contains('light')) {
       document.body.classList.remove('light');
