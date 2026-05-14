@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PBF · Rebalanceador + Leitor XP (com ativos individuais)</title>
+<title>PBF · Rebalanceador + Leitor de PDF XP</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
@@ -22,6 +22,7 @@
   --alvo-bar-bg: #1c2333; --resumo-item-bg: #1c2333;
   --debug-bg: #1c2333; --overlay-bg: rgba(14,17,23,.88);
   --footer-border: rgba(255,255,255,0.07);
+  --relatorio-bg: linear-gradient(135deg, rgba(245,200,66,0.03) 0%, rgba(52,152,219,0.03) 100%);
   --ativo-item-bg: rgba(255,255,255,0.03);
 }
 body.light {
@@ -48,7 +49,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .header-right { display: flex; align-items: center; gap: 1rem; }
 .header-date { font-size: 13px; color: var(--text3); }
 .theme-toggle { background: var(--bg3); border: 1px solid var(--border2); border-radius: 30px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
-.main { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+.main { max-width: 1300px; margin: 0 auto; padding: 2rem; }
 .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
 .card-title { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .upload-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
@@ -94,7 +95,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .alvo-bar-wrap { width: 60px; height: 4px; background: var(--alvo-bar-bg); border-radius: 2px; overflow: hidden; }
 .alvo-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; }
 .alvo-pct { font-size: 15px; font-weight: 700; color: var(--gold); min-width: 42px; text-align: right; }
-.ativos-container, .ativos-cliente-container { margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
+.ativos-container { margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
 .subtitle { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 0.5rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
 .ativo-row { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 8px; background: var(--ativo-item-bg); margin-bottom: 4px; font-size: 13px; }
 .ativo-nome { flex: 1; font-weight: 500; }
@@ -120,21 +121,25 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .legenda-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text3); }
 .patrim-row { display: flex; align-items: center; gap: 1rem; margin: 0.75rem 0 0.25rem; flex-wrap: wrap; }
 .patrim-input { background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 8px 12px; font-size: 15px; width: 220px; color: var(--text); }
+.relatorio-texto { font-size: 14px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
+.cenario-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 12px; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; resize: vertical; margin-top: 0.5rem; }
 .perfis-row { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
 .perfil-btn { flex: 1; min-width: 100px; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; border: 1px solid var(--border2); background: var(--bg2); color: var(--text2); }
 .perfil-btn:hover { border-color: var(--gold); color: var(--gold); }
 .perfil-btn.ativo { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 600; }
-.comparativo-ativos { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
 </style>
 </head>
 <body>
+
 <div class="overlay" id="overlay"><div class="spin"></div><div>Processando PDF...</div></div>
+
 <header class="header">
   <div class="header-logo"><div class="dot">PBF</div> Rebalanceador + Leitor XP</div>
   <div class="header-right"><div class="header-date" id="hDate"></div><button class="theme-toggle" id="themeToggle">🌙</button></div>
 </header>
+
 <main class="main">
-  <!-- 1. UPLOAD PDF -->
+  <!-- 1. UPLOAD DO PDF (TOPO) -->
   <div class="card">
     <div class="card-title">📄 1. Importar relatório XP (PDF)</div>
     <div class="upload-row">
@@ -152,10 +157,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   <!-- 2. PERFIS -->
   <div class="perfis-row" id="perfisRow"></div>
 
-  <!-- 3. ALOCAÇÃO ATUAL (CLASSES) + CARTEIRA RECOMENDADA -->
   <div class="grid2">
+    <!-- ALOCAÇÃO ATUAL -->
     <div class="card">
-      <div class="card-title">📊 2. Alocação atual (classes macro)</div>
+      <div class="card-title">📊 2. Alocação atual (preenchida pelo PDF)</div>
       <div id="inputsAtual"></div>
       <div id="totalBar" class="total-bar total-err"><span>Total</span><span id="totalVal">0,00%</span></div>
       <div class="patrim-row">
@@ -163,6 +168,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <input type="text" id="patrimonioInput" class="patrim-input" placeholder="0,00" value="1000000">
       </div>
     </div>
+
+    <!-- CARTEIRA RECOMENDADA -->
     <div class="card">
       <div class="card-title">🎯 3. Carteira recomendada · <span id="perfilLabel" style="color:var(--gold)">Moderado</span></div>
       <div id="tabelaAlvo"></div>
@@ -171,32 +178,21 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
   </div>
 
-  <!-- RESULTADO DO REBALANCEAMENTO -->
+  <!-- RESULTADO REBALANCEAMENTO -->
   <div id="resultArea" class="card" style="display:none">
     <div class="card-title">📋 5. Recomendações de movimentação</div>
     <div id="listaRec"></div>
     <div class="resumo-grid" id="resumoGrid"></div>
-    <div class="legenda"><div class="legenda-item"><div class="dot8" style="background:var(--amber)"></div>Manter</div><div class="legenda-item"><div class="dot8" style="background:var(--green)"></div>Alocar (comprar)</div><div class="legenda-item"><div class="dot8" style="background:var(--red)"></div>Retirar (vender)</div></div>
-  </div>
-
-  <!-- 6. COMPARATIVO DE ATIVOS (CLIENTE VS RECOMENDADO) -->
-  <div class="card">
-    <div class="card-title">📊 6. Comparativo de ativos (cliente x recomendado)</div>
-    <div id="comparativoAtivos" class="comparativo-ativos">
-      <div>
-        <div class="subtitle">📌 Ativos atuais do cliente (extraídos do PDF)</div>
-        <div id="ativosCliente"></div>
-      </div>
-      <div>
-        <div class="subtitle">⭐ Ativos recomendados por perfil</div>
-        <div id="ativosRecomendados"></div>
-      </div>
+    <div class="legenda">
+      <div class="legenda-item"><div class="dot8" style="background:var(--amber)"></div>Manter</div>
+      <div class="legenda-item"><div class="dot8" style="background:var(--green)"></div>Alocar (comprar)</div>
+      <div class="legenda-item"><div class="dot8" style="background:var(--red)"></div>Retirar (vender)</div>
     </div>
   </div>
 
-  <!-- 7. RELATÓRIO MENSAL -->
+  <!-- RELATÓRIO MENSAL -->
   <div class="card">
-    <div class="card-title">📝 7. Cenário Macro do Mês</div>
+    <div class="card-title">📝 6. Cenário Macro do Mês</div>
     <textarea id="textoCenario" class="cenario-textarea" rows="5">O mês de abril de 2026 foi marcado por uma consolidação das expectativas econômicas globais e locais. No Brasil, o foco permaneceu na trajetória da inflação e no compromisso fiscal, fatores que influenciam diretamente o ritmo de queda da taxa Selic pelo Banco Central. No cenário global, a resiliência da economia norte-americana e a manutenção dos juros em patamares elevados pelo Fed continuam ditando o ritmo dos mercados, somadas às tensões geopolíticas que adicionam volatilidade aos preços das commodities e à percepção de risco dos investidores.</textarea>
     <div class="card-title" style="margin-top: 1rem;">📈 Relatório Automático</div>
     <div id="relatorioConteudo" style="background: var(--relatorio-bg); border-radius: 12px; padding: 1.5rem;">
@@ -205,15 +201,15 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <button class="btn btn-ghost" id="btnCopiar" style="margin-top: 1rem; width: auto;">📋 Copiar relatório (WhatsApp)</button>
   </div>
 </main>
-<footer class="footer">📌 Material informativo — as alocações por ativo seguem as carteiras recomendadas do Excel. Para atualizar pesos/ativos, edite a constante CARTEIRAS no início do script.</footer>
+<footer class="footer">📌 Material informativo — para atualizar as carteiras recomendadas, edite a constante CARTEIRAS no início do script.</footer>
 
 <script>
 // ============================================================
-// CARTEIRAS RECOMENDADAS (fácil de editar)
+// 🛠️ CARTEIRAS RECOMENDADAS (edite aqui os pesos e ativos)
 // ============================================================
 const CARTEIRAS = {
   Conservador: {
-    classes: { "Pós-fixado": 85, "Prefixado": 15, "Inflação": 0, "Multimercado": 0, "Renda Variável": 0, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
+    classes: { "Prefixado": 15, "Pós-fixado": 85, "Inflação": 0, "Multimercado": 0, "Renda Variável": 0, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
       { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 15 },
@@ -225,7 +221,7 @@ const CARTEIRAS = {
     ]
   },
   Moderado: {
-    classes: { "Pós-fixado": 58, "Prefixado": 13, "Inflação": 20, "Multimercado": 5, "Renda Variável": 4, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
+    classes: { "Prefixado": 13, "Pós-fixado": 58, "Inflação": 20, "Multimercado": 5, "Renda Variável": 4, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 13 },
       { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 12 },
@@ -243,7 +239,7 @@ const CARTEIRAS = {
     ]
   },
   Agressivo: {
-    classes: { "Pós-fixado": 50, "Prefixado": 15, "Inflação": 24, "Multimercado": 5, "Renda Variável": 6, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
+    classes: { "Prefixado": 15, "Pós-fixado": 50, "Inflação": 24, "Multimercado": 5, "Renda Variável": 6, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
       { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
       { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 8 },
@@ -260,12 +256,12 @@ const CARTEIRAS = {
   }
 };
 
+// Classes monitoradas (as que aparecem no PDF e que usamos para rebalanceamento)
 const CLASSES_ATIVOS = ["Pós-fixado", "Prefixado", "Inflação", "Multimercado", "Renda Variável", "Renda Fixa Global", "Renda Variável Global"];
 const CORES = ["c0","c1","c2","c3","c4","c5","c6"];
 
 let perfilAtivo = "Moderado";
 let inputsMap = {};
-let ativosCliente = []; // armazena ativos individuais extraídos do PDF
 
 function fmtPct(v) { return v.toFixed(2).replace('.', ',') + ' %'; }
 function fmtBRL(v) { return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits: 2}); }
@@ -288,7 +284,12 @@ function renderInputs() {
   CLASSES_ATIVOS.forEach((classe, idx) => {
     const row = document.createElement('div');
     row.className = 'classe-row';
-    row.innerHTML = `<div class="dot8 ${CORES[idx]}"></div><span class="classe-nome">${classe}</span><input class="classe-input" type="number" step="any" min="0" max="100" value="0" id="inp_${idx}"><span>%</span>`;
+    row.innerHTML = `
+      <div class="dot8 ${CORES[idx]}"></div>
+      <span class="classe-nome">${classe}</span>
+      <input class="classe-input" type="number" step="any" min="0" max="100" value="0" id="inp_${idx}">
+      <span class="pct-label">%</span>
+    `;
     container.appendChild(row);
     inputsMap[classe] = row.querySelector('input');
     inputsMap[classe].addEventListener('input', atualizarTotal);
@@ -302,17 +303,31 @@ function renderRecomendacao() {
   const containerAlvo = document.getElementById('tabelaAlvo');
   containerAlvo.innerHTML = CLASSES_ATIVOS.map((c, i) => {
     const peso = rec.classes[c] || 0;
-    return `<div class="alvo-row"><div class="dot8 ${CORES[i]}"></div><span class="alvo-nome">${c}</span><div class="alvo-bar-wrap"><div class="alvo-bar-fill" style="width:${peso}%"></div></div><span class="alvo-pct">${peso}%</span></div>`;
+    return `
+      <div class="alvo-row">
+        <div class="dot8 ${CORES[i]}"></div>
+        <span class="alvo-nome">${c}</span>
+        <div class="alvo-bar-wrap"><div class="alvo-bar-fill" style="width:${peso}%"></div></div>
+        <span class="alvo-pct">${peso}%</span>
+      </div>
+    `;
   }).join('');
-  const containerAtivos = document.getElementById('ativosRecomendados');
+  
+  const containerAtivos = document.getElementById('ativosAlvo');
   if (rec.ativos && rec.ativos.length) {
-    let html = `<div class="subtitle">⭐ Ativos recomendados (peso % da carteira total)</div>`;
+    let html = `<div class="subtitle">📌 Ativos sugeridos (percentual da carteira total)</div>`;
     for (let classe of CLASSES_ATIVOS) {
       const ativosDaClasse = rec.ativos.filter(a => a.classe === classe);
       if (ativosDaClasse.length === 0) continue;
-      html += `<div style="margin-top:0.5rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
+      html += `<div style="margin-top:0.75rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
       ativosDaClasse.forEach(ativo => {
-        html += `<div class="ativo-row"><span class="ativo-nome">${ativo.nome}</span><span class="ativo-classe">${ativo.classe}</span><span class="ativo-peso">${ativo.peso}%</span></div>`;
+        html += `
+          <div class="ativo-row">
+            <span class="ativo-nome">${ativo.nome}</span>
+            <span class="ativo-classe">${ativo.classe}</span>
+            <span class="ativo-peso">${ativo.peso}%</span>
+          </div>
+        `;
       });
     }
     containerAtivos.innerHTML = html;
@@ -324,14 +339,17 @@ function renderRecomendacao() {
 function renderPerfis() {
   const icons = { Conservador: '🛡️', Moderado: '⚖️', Agressivo: '🚀' };
   const container = document.getElementById('perfisRow');
-  container.innerHTML = Object.keys(CARTEIRAS).map(p => `<button class="perfil-btn ${p === perfilAtivo ? 'ativo' : ''}" data-perfil="${p}">${icons[p]} ${p}</button>`).join('');
+  container.innerHTML = Object.keys(CARTEIRAS).map(p => `
+    <button class="perfil-btn ${p === perfilAtivo ? 'ativo' : ''}" data-perfil="${p}">
+      ${icons[p]} ${p}
+    </button>
+  `).join('');
   container.querySelectorAll('.perfil-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       perfilAtivo = btn.dataset.perfil;
       renderPerfis();
       renderRecomendacao();
       document.getElementById('resultArea').style.display = 'none';
-      document.getElementById('ativosCliente').innerHTML = ''; // limpa ativos cliente ao trocar perfil? mantém
     });
   });
 }
@@ -348,8 +366,10 @@ function analisar() {
     return;
   }
   const alvo = CARTEIRAS[perfilAtivo].classes;
-  let patrimonio = parseFloat(document.getElementById('patrimonioInput').value.replace(/\./g, '').replace(',', '.'));
+  let patrimonioInput = document.getElementById('patrimonioInput').value;
+  let patrimonio = parseFloat(patrimonioInput.replace(/\./g, '').replace(',', '.'));
   if (isNaN(patrimonio)) patrimonio = 0;
+  
   let nManter = 0, nAlocar = 0, nRetirar = 0;
   const htmlRows = CLASSES_ATIVOS.map((c, idx) => {
     const atualPct = atual[c] || 0;
@@ -357,19 +377,48 @@ function analisar() {
     const diff = alvoPct - atualPct;
     const valorMov = Math.abs(diff * patrimonio / 100);
     let badgeClass, label, valorClass;
-    if (Math.abs(diff) < 0.05) { badgeClass = 'b-manter'; label = '✓ Manter'; valorClass = 'manter'; nManter++; }
-    else if (diff > 0) { badgeClass = 'b-alocar'; label = `↑ Alocar +${fmtPct(diff)}`; valorClass = 'alocar'; nAlocar++; }
-    else { badgeClass = 'b-retirar'; label = `↓ Retirar ${fmtPct(Math.abs(diff))}`; valorClass = 'retirar'; nRetirar++; }
+    if (Math.abs(diff) < 0.05) {
+      badgeClass = 'b-manter'; label = '✓ Manter'; valorClass = 'manter';
+      nManter++;
+    } else if (diff > 0) {
+      badgeClass = 'b-alocar'; label = `↑ Alocar +${fmtPct(diff)}`; valorClass = 'alocar';
+      nAlocar++;
+    } else {
+      badgeClass = 'b-retirar'; label = `↓ Retirar ${fmtPct(Math.abs(diff))}`; valorClass = 'retirar';
+      nRetirar++;
+    }
     const valorDisplay = Math.abs(diff) < 0.05 ? 'R$ 0,00' : fmtBRL(valorMov);
-    return `<div class="rec-row"><div class="dot8 ${CORES[idx]}"></div><span class="rec-nome">${c}</span><span class="rec-nums">${fmtPct(atualPct)} → ${alvoPct}%</span><span class="rec-valor ${valorClass}">${valorDisplay}</span><span class="badge ${badgeClass}">${label}</span></div>`;
+    return `
+      <div class="rec-row">
+        <div class="dot8 ${CORES[idx]}"></div>
+        <span class="rec-nome">${c}</span>
+        <span class="rec-nums">${fmtPct(atualPct)} → ${alvoPct}%</span>
+        <span class="rec-valor ${valorClass}">${valorDisplay}</span>
+        <span class="badge ${badgeClass}">${label}</span>
+      </div>
+    `;
   }).join('');
-  document.getElementById('listaRec').innerHTML = htmlRows;
-  document.getElementById('resumoGrid').innerHTML = `<div class="resumo-item"><div class="resumo-label">Manter</div><div class="resumo-val" style="color:var(--amber)">${nManter}</div></div><div class="resumo-item"><div class="resumo-label">Alocar</div><div class="resumo-val" style="color:var(--green)">${nAlocar}</div></div><div class="resumo-item"><div class="resumo-label">Retirar</div><div class="resumo-val" style="color:var(--red)">${nRetirar}</div></div><div class="resumo-item"><div class="resumo-label">Perfil</div><div class="resumo-val" style="color:var(--gold);font-size:14px">${perfilAtivo}</div></div>`;
-  document.getElementById('resultArea').style.display = 'block';
-  document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  
+  let observacao = '';
+  if (CARTEIRAS[perfilAtivo].ativos && CARTEIRAS[perfilAtivo].ativos.length) {
+    observacao = `<div style="margin-top: 1rem; padding: 0.75rem; background: var(--blue-bg); border-radius: 8px; border-left: 3px solid var(--blue);">
+      <strong style="color: var(--blue);">ℹ️ Distribuição sugerida:</strong> Utilize os valores acima para ajustar as classes. Dentro de cada classe, prefira os ativos listados na carteira recomendada.
+    </div>`;
+  }
+  
+  document.getElementById('listaRec').innerHTML = htmlRows + observacao;
+  document.getElementById('resumoGrid').innerHTML = `
+    <div class="resumo-item"><div class="resumo-label">Manter</div><div class="resumo-val" style="color:var(--amber)">${nManter}</div></div>
+    <div class="resumo-item"><div class="resumo-label">Alocar</div><div class="resumo-val" style="color:var(--green)">${nAlocar}</div></div>
+    <div class="resumo-item"><div class="resumo-label">Retirar</div><div class="resumo-val" style="color:var(--red)">${nRetirar}</div></div>
+    <div class="resumo-item"><div class="resumo-label">Perfil</div><div class="resumo-val" style="color:var(--gold);font-size:14px">${perfilAtivo}</div></div>
+  `;
+  const resultArea = document.getElementById('resultArea');
+  resultArea.style.display = 'block';
+  resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// ========== PARSER DO PDF (CAPTURA CLASSES E ATIVOS INDIVIDUAIS) ==========
+// ========== PARSER DO PDF (CORRIGIDO) ==========
 let debugLines = [];
 function dbg(txt) { debugLines.push(txt); document.getElementById('debugBox').textContent = debugLines.join('\n'); }
 function clearDebug() { debugLines = []; document.getElementById('debugBox').textContent = ''; }
@@ -378,77 +427,91 @@ async function extrairDadosPDF(file) {
   let ab = await file.arrayBuffer();
   let pdf = await pdfjsLib.getDocument({ data: ab }).promise;
   let dados = {
-    alocacoes: {},
+    alocacoes: {},   // nome da classe -> percentual (ex: "Pós-fixado" -> "78,08")
+    retornos: {},
     patrimonio: null,
     rentabilidadeMensal: null,
     pctCdi: null,
     mesReferencia: "",
     anoReferencia: "",
-    ativos: [] // lista de { nome, peso, classe? (opcional) }
+    ativos: []       // lista de ativos individuais { nome, alocacao, classe? }
   };
   
-  let textoCompleto = '';
+  let textoCompleto = "";
   for (let p = 1; p <= pdf.numPages; p++) {
     let page = await pdf.getPage(p);
     let textContent = await page.getTextContent();
     let texto = textContent.items.map(item => item.str).join(' ');
-    textoCompleto += texto + '\n';
-  }
-  dbg("=== TEXTO COMPLETO (primeiros 3000 caracteres) ===\n" + textoCompleto.substring(0, 3000));
-  
-  // 1. Capturar classes macro da página "ESTRATÉGIA : COMPOSIÇÃO"
-  const regexClasseMacro = /(Pós\s*Fixado|Caixa|Inflação|Fundos\s*Listados|Proventos|Pré\s*Fixado|Multimercado|Renda\s*Variável)\s*\(\s*(\d{1,3}),(\d{2})\s*%\)/gi;
-  let match;
-  while ((match = regexClasseMacro.exec(textoCompleto)) !== null) {
-    let nomeRaw = match[1];
-    let nome = nomeRaw === 'Pós Fixado' ? 'Pós-fixado' : 
-               (nomeRaw === 'Pré Fixado' ? 'Prefixado' : 
-               (nomeRaw === 'Fundos Listados' ? 'Fundos Listados' : nomeRaw));
-    let alocacao = parseFloat(match[2] + '.' + match[3]);
-    if (!isNaN(alocacao) && CLASSES_ATIVOS.includes(nome) && (!dados.alocacoes[nome] || dados.alocacoes[nome] < alocacao)) {
-      dados.alocacoes[nome] = alocacao;
-      dbg(`✅ Classe macro: ${nome} = ${alocacao}%`);
-    }
+    textoCompleto += texto + "\n";
   }
   
-  // Fallback: procurar na tabela "Estratégias Saldo Bruto Mês Atual"
-  const regexTabela = /Estratégias\s+Saldo\s+Bruto\s+Mês\s+Atual[\s\S]+?(Pós\s*Fixado)\s+R\$\s*[\d\.]+,\d+\s+(\d{1,3}),(\d{2})%/i;
-  let fallbackMatch = regexTabela.exec(textoCompleto);
-  if (fallbackMatch && !dados.alocacoes['Pós-fixado']) {
-    dados.alocacoes['Pós-fixado'] = parseFloat(fallbackMatch[2] + '.' + fallbackMatch[3]);
-    dbg(`✅ Classe macro (fallback): Pós-fixado = ${dados.alocacoes['Pós-fixado']}%`);
-  }
+  // Exibe trecho para debug
+  dbg("=== TEXTO COMPLETO (primeiros 3000 caracteres) ===");
+  dbg(textoCompleto.substring(0, 3000));
   
-  // 2. Capturar ativos individuais da seção "POSIÇÃO DETALHADA DOS ATIVOS"
-  // Formato: "ARX Fuji FIC de FIF RF CP RL R$ 20.790,05 14858.81 3,92% ..."
-  const regexAtivo = /([A-Z][A-Za-zÀ-Úà-û0-9\s\.\-\/]+?)\s+R\$\s*[\d\.]+,\d+\s+[\d\.]+\s+(\d{1,3}),(\d{2})%/gi;
-  let ativoMatch;
-  while ((ativoMatch = regexAtivo.exec(textoCompleto)) !== null) {
-    let nome = ativoMatch[1].trim();
-    let peso = parseFloat(ativoMatch[2] + '.' + ativoMatch[3]);
-    // Evitar capturar cabeçalhos ou linhas indesejadas
-    if (nome.length > 3 && peso > 0 && !nome.includes("Estratégia") && !nome.includes("Saldo") && !nome.includes("Benchmarks")) {
-      // Evitar duplicatas (manter a primeira ocorrência)
-      if (!dados.ativos.some(a => a.nome === nome)) {
-        dados.ativos.push({ nome: nome, peso: peso });
-        dbg(`📌 Ativo individual: ${nome} → ${peso}%`);
-      }
-    }
-  }
-  
-  // 3. Patrimônio e rentabilidade
-  let patMatch = textoCompleto.match(/PATRIMÔNIO\s*TOTAL\s*BRUTO:\s*R\$\s*([\d\.]+,\d{2})/i);
+  // 1. Capturar patrimônio e rentabilidade
+  let patMatch = textoCompleto.match(/PATRIMÔNIO TOTAL BRUTO:\s*R\$\s*([\d\.]+,\d{2})/i);
   if (patMatch) dados.patrimonio = patMatch[1];
-  let rentMatch = textoCompleto.match(/RENTABILIDADE\s*MÊS:\s*([\d,]+)%/i);
+  
+  let rentMatch = textoCompleto.match(/RENTABILIDADE MÊS:\s*([\d,]+)%/i);
   if (rentMatch) dados.rentabilidadeMensal = rentMatch[1].replace(',', '.');
-  let cdiMatch = textoCompleto.match(/%\s*CDI\s*:\s*([\d,]+)%/i);
+  
+  let cdiMatch = textoCompleto.match(/%CDI:\s*([\d,]+)%/i);
   if (cdiMatch) dados.pctCdi = cdiMatch[1].replace(',', '.');
-  let dataMatch = textoCompleto.match(/Data\s*de\s*Referência\s*(\d{2})\/(\d{2})\/(\d{4})/i);
+  
+  let dataMatch = textoCompleto.match(/Data de referência\s*:\s*(\d{2})\/(\d{2})\/(\d{4})/i);
   if (dataMatch) {
     let meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     dados.mesReferencia = meses[parseInt(dataMatch[2]) - 1];
     dados.anoReferencia = dataMatch[3];
   }
+  
+  // 2. Capturar classes de ativos da seção "ESTRATÉGIA: COMPOSIÇÃO"
+  // Padrão: "Pós Fixado (78,08%)" ou "Caixa (0,01%)" etc.
+  let regexClasse = /([A-Za-zÀ-Úà-û\s]+?)\s*\(\s*(\d+),(\d+)%\s*\)/gi;
+  let match;
+  while ((match = regexClasse.exec(textoCompleto)) !== null) {
+    let nomeRaw = match[1].trim();
+    let alocacao = match[2] + ',' + match[3];
+    // Mapear nomes para os padronizados
+    let nomeNormalizado = "";
+    if (nomeRaw === "Pós Fixado") nomeNormalizado = "Pós-fixado";
+    else if (nomeRaw === "Pré Fixado") nomeNormalizado = "Prefixado";
+    else if (nomeRaw === "Inflação") nomeNormalizado = "Inflação";
+    else if (nomeRaw === "Multimercado") nomeNormalizado = "Multimercado";
+    else if (nomeRaw === "Renda Variável Brasil") nomeNormalizado = "Renda Variável";
+    else if (nomeRaw === "Renda Variável Global") nomeNormalizado = "Renda Variável Global";
+    else if (nomeRaw === "Renda Fixa Global") nomeNormalizado = "Renda Fixa Global";
+    else if (nomeRaw === "Caixa") nomeNormalizado = "Caixa";
+    else if (nomeRaw === "Proventos") nomeNormalizado = "Proventos";
+    else if (nomeRaw === "Fundos Listados") nomeNormalizado = "Fundos Listados";
+    else continue;
+    
+    if (!dados.alocacoes[nomeNormalizado]) {
+      dados.alocacoes[nomeNormalizado] = alocacao;
+      dbg(`✅ Classe capturada: ${nomeNormalizado} = ${alocacao}%`);
+    }
+  }
+  
+  // 3. Capturar ativos individuais da seção "POSIÇÃO DETALHADA DOS ATIVOS"
+  // Padrão: "ARX Fuji FIC de FIF RF CP RL R$ 20.790,05 ..."
+  // Vamos procurar por linhas que começam com nome do ativo e depois R$ e depois %Aloc.
+  // Mas é mais complexo; para simplificar, vamos procurar por padrões como "R$ 20.790,05" e depois "(%)" mas não é fácil.
+  // Como você tem os ativos listados, podemos usar regex para capturar nomes seguidos de percentuais de alocação.
+  let regexAtivo = /^([A-Za-zÀ-Úà-û0-9\s\.\-\/]+?)\s+R\$\s*[\d\.]+,\d{2}\s+[\d\.]+\s+([\d,]+)%/gm;
+  let ativoMatch;
+  // Como o texto tem quebras de linha, vamos tentar com uma abordagem mais simples: buscar padrões "R$ ... (X,XX%)"
+  let regexAtivo2 = /([A-Za-zÀ-Úà-û0-9\s\.\-\/]+?)\s+R\$\s*[\d\.]+,\d{2}\s+[\d\.]*\s*([\d,]+)%/gi;
+  while ((ativoMatch = regexAtivo2.exec(textoCompleto)) !== null) {
+    let nomeAtivo = ativoMatch[1].trim();
+    let pesoAtivo = ativoMatch[2];
+    // Evitar capturar as classes novamente
+    if (!dados.alocacoes[nomeAtivo] && nomeAtivo.length > 3 && !nomeAtivo.includes("Estratégia") && !nomeAtivo.includes("Total")) {
+      dados.ativos.push({ nome: nomeAtivo, peso: pesoAtivo });
+      dbg(`📌 Ativo individual: ${nomeAtivo} → ${pesoAtivo}%`);
+    }
+  }
+  
   return dados;
 }
 
@@ -460,12 +523,18 @@ function gerarRelatorioTexto(dados) {
   let patrimonio = dados.patrimonio;
   let cenario = document.getElementById('textoCenario').value;
   let desempenhoTexto = "";
-  let classesList = Object.entries(dados.alocacoes).map(([nome, aloc]) => ({ nome, alocacao: aloc }));
-  classesList.sort((a,b) => b.alocacao - a.alocacao);
-  for (let item of classesList) {
-    desempenhoTexto += `${item.nome} (${item.alocacao.toFixed(2).replace('.',',')}% da carteira); `;
+  let classesList = [];
+  for (let nome in dados.alocacoes) {
+    if (dados.alocacoes[nome] && CLASSES_ATIVOS.includes(nome)) {
+      let alocNum = parseFloat(dados.alocacoes[nome].replace(',', '.'));
+      classesList.push({ nome: nome, alocacao: alocNum, alocStr: dados.alocacoes[nome] });
+    }
   }
-  if (desempenhoTexto === "") desempenhoTexto = "Não foi possível capturar as classes no PDF.";
+  classesList.sort((a, b) => b.alocacao - a.alocacao);
+  for (let item of classesList) {
+    desempenhoTexto += `${item.nome} (${item.alocStr}% da carteira); `;
+  }
+  if (desempenhoTexto === "") desempenhoTexto = "Não foi possível capturar a alocação por classe no PDF.";
   let rentabilidadeStr = rentabilidade ? `${rentabilidade}%` : "não disponível";
   let pctCdiStr = pctCdi ? `${pctCdi}%` : "não disponível";
   let patrimonioStr = patrimonio ? fmtBRL(parseFloat(patrimonio.replace(/\./g, '').replace(',', '.'))) : "";
@@ -475,7 +544,7 @@ ${cenario}
 
 Sua carteira atravessou esse ambiente com solidez, apresentando um retorno de ${rentabilidadeStr} no mês de ${mes.toLowerCase()} de ${ano}, equivalente a ${pctCdiStr} do CDI do período.${patrimonioStr ? ` O patrimônio atual é de ${patrimonioStr}.` : ''}
 
-No desempenho por classe de ativo: ${desempenhoTexto}
+Composição atual da carteira: ${desempenhoTexto}
 
 Por fim, reforçamos a importância da disciplina na manutenção da estratégia e nos aportes focando no desenvolvimento da carteira no longo prazo. Essa postura é fundamental para atravessar diferentes ciclos de mercado, aproveitar oportunidades, reduzir os impactos das oscilações no curto prazo e manter a carteira alinhada aos seus objetivos financeiros.`;
 }
@@ -487,19 +556,28 @@ document.getElementById('btnToggleDebug').addEventListener('click', () => {
 });
 document.getElementById('btnCopiar').addEventListener('click', async () => {
   const texto = document.getElementById('relatorioConteudo').innerText;
-  try { await navigator.clipboard.writeText(texto); setStatus('✅ Relatório copiado!', 'ok'); } catch(e) { setStatus('❌ Erro ao copiar', 'err'); }
+  try {
+    await navigator.clipboard.writeText(texto);
+    setStatus('✅ Relatório copiado!', 'ok');
+  } catch (err) {
+    setStatus('❌ Erro ao copiar', 'err');
+  }
 });
 document.getElementById('btnImportar').addEventListener('click', async () => {
   let file = document.getElementById('filePdf').files[0];
-  if (!file) { setStatus('Selecione um arquivo PDF.', 'err'); return; }
+  if (!file) { setStatus('Selecione um PDF.', 'err'); return; }
   clearDebug();
   document.getElementById('overlay').classList.add('show');
   try {
     let dados = await extrairDadosPDF(file);
-    // Preencher classes macro
+    // Preencher alocação atual
     for (let classe of CLASSES_ATIVOS) {
-      if (dados.alocacoes[classe]) inputsMap[classe].value = dados.alocacoes[classe].toFixed(2);
-      else inputsMap[classe].value = '0';
+      if (dados.alocacoes[classe]) {
+        let valor = parseFloat(dados.alocacoes[classe].replace(',', '.'));
+        if (!isNaN(valor)) inputsMap[classe].value = valor.toFixed(2);
+      } else {
+        inputsMap[classe].value = '0';
+      }
     }
     atualizarTotal();
     if (dados.patrimonio) {
@@ -508,21 +586,9 @@ document.getElementById('btnImportar').addEventListener('click', async () => {
       document.getElementById('patrimVal').innerHTML = fmtBRL(patrimonioNum);
       document.getElementById('patrimTag').classList.add('show');
     }
-    // Exibir ativos individuais do cliente
-    ativosCliente = dados.ativos;
-    const containerAtivosCliente = document.getElementById('ativosCliente');
-    if (ativosCliente.length > 0) {
-      let html = `<div class="subtitle">📌 ${ativosCliente.length} ativos encontrados no PDF</div>`;
-      ativosCliente.forEach(ativo => {
-        html += `<div class="ativo-row"><span class="ativo-nome">${ativo.nome}</span><span class="ativo-peso">${ativo.peso.toFixed(2).replace('.',',')}%</span></div>`;
-      });
-      containerAtivosCliente.innerHTML = html;
-    } else {
-      containerAtivosCliente.innerHTML = `<div class="subtitle">Nenhum ativo individual encontrado no PDF (seção 'Posição Detalhada' não localizada).</div>`;
-    }
-    let textoRelatorio = gerarRelatorioTexto(dados);
-    document.getElementById('relatorioConteudo').innerHTML = `<div class="relatorio-texto">${textoRelatorio.replace(/\n/g, '<br>')}</div>`;
-    setStatus('✅ PDF importado! Alocação atual e ativos extraídos.', 'ok');
+    let textoFinal = gerarRelatorioTexto(dados);
+    document.getElementById('relatorioConteudo').innerHTML = `<div class="relatorio-texto">${textoFinal.replace(/\n/g, '<br>')}</div>`;
+    setStatus('✅ PDF importado com sucesso!', 'ok');
   } catch (e) {
     setStatus('Erro: ' + e.message, 'err');
     dbg('ERRO: ' + e.message);
@@ -538,7 +604,6 @@ document.getElementById('btnLimpar').addEventListener('click', () => {
   document.getElementById('status').classList.remove('show');
   document.getElementById('patrimTag').classList.remove('show');
   document.getElementById('relatorioConteudo').innerHTML = '<div style="text-align: center; color: var(--text3);">⚡ Importe um PDF para gerar o relatório automático</div>';
-  document.getElementById('ativosCliente').innerHTML = '';
   clearDebug();
   document.getElementById('filePdf').value = '';
   document.getElementById('fileName').textContent = 'Selecionar arquivo PDF...';
