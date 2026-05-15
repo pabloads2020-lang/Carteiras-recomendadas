@@ -37,7 +37,6 @@ body {
   min-height: 100vh; 
 }
 
-/* Cabeçalho e layout geral */
 .header { background: var(--header-bg); border-bottom: 1px solid var(--header-border); padding: 0 1rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
 .header-logo { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
 .dot { width: 28px; height: 28px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #000; }
@@ -50,7 +49,6 @@ body {
 .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.4rem; margin-bottom: 0; height: 100%; transition: all 0.2s; }
 .card-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 
-/* Botões de perfil */
 .perfis-row { display: flex; gap: 12px; margin-bottom: 1.8rem; flex-wrap: wrap; justify-content: center; }
 .perfil-btn {
   flex: 1; min-width: 120px; padding: 12px 16px; border-radius: 60px; font-size: 15px; font-weight: 600;
@@ -66,7 +64,6 @@ body {
   backdrop-filter: blur(1px);
   box-shadow: 0 0 6px rgba(245, 200, 66, 0.2);
 }
-/* Ajuste no modo claro para contraste */
 body.light .perfil-btn.ativo {
   background: rgba(184, 134, 11, 0.2);
   border-color: #b8860b;
@@ -75,7 +72,6 @@ body.light .perfil-btn.ativo {
   box-shadow: 0 0 4px rgba(184,134,11,0.3);
 }
 
-/* Grid responsivo */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
 @media (max-width: 800px) { 
   .grid2 { grid-template-columns: 1fr; gap: 1.2rem; }
@@ -89,7 +85,6 @@ body.light .perfil-btn.ativo {
   .bar-wrapper { width: 70px; }
 }
 
-/* Classes (carteira recomendada) */
 .classe-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .classe-item:last-child { border-bottom: none; }
 .dot-class { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
@@ -101,51 +96,23 @@ body.light .perfil-btn.ativo {
 .bar-fill { height: 100%; background: var(--gold); border-radius: 10px; }
 .classe-pct { font-size: 15px; font-weight: 700; color: var(--gold); min-width: 50px; text-align: right; font-family: monospace; }
 
-/* Ativos e tooltips */
 .ativos-container { margin-top: 0.8rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
 .ativo-row { 
   display: flex; align-items: center; gap: 12px; padding: 8px 6px; border-radius: 8px; 
-  background: var(--ativo-item-bg); margin-bottom: 6px; font-size: 13px; position: relative;
+  background: var(--ativo-item-bg); margin-bottom: 6px; font-size: 13px;
 }
-.ativo-nome { 
-  flex: 1; font-weight: 500; cursor: help; 
-  white-space: normal; word-break: break-word;
-  border-bottom: 1px dotted transparent;
-  transition: border-color 0.2s;
-}
-.ativo-nome:hover { border-bottom-color: var(--gold); }
-/* Tooltip customizado */
-.ativo-nome[data-tooltip] {
-  position: relative;
-}
-.ativo-nome[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  background: var(--bg3);
-  color: var(--text);
-  font-size: 11px;
-  font-weight: normal;
-  padding: 6px 10px;
-  border-radius: 12px;
+.ativo-nome {
+  flex: 1; font-weight: 500;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: color 0.2s, text-decoration 0.2s;
   white-space: normal;
-  max-width: 260px;
-  width: max-content;
-  z-index: 200;
-  border: 1px solid var(--gold);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  backdrop-filter: blur(4px);
-  pointer-events: none;
-  font-family: monospace;
-  line-height: 1.4;
-  margin-bottom: 6px;
+  word-break: break-word;
 }
-body.light .ativo-nome[data-tooltip]:hover::after {
-  background: #fff;
-  color: #000;
-  border-color: var(--gold);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+.ativo-nome:hover {
+  color: var(--gold);
+  text-decoration: underline;
 }
 .ativo-classe {
   font-size: 11px;
@@ -153,50 +120,20 @@ body.light .ativo-nome[data-tooltip]:hover::after {
   padding: 4px 12px;
   border-radius: 40px;
   letter-spacing: 0.3px;
-  transition: all 0.2s ease;
   border-width: 1px;
   border-style: solid;
   white-space: nowrap;
 }
 .ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; font-family: monospace; }
 
-/* Badges - estilo neon/translúcido - ajustado para tema claro com melhor contraste */
-.badge-prefixado {
-  background: rgba(245, 200, 66, 0.15);
-  color: #f5c842;
-  border-color: rgba(245, 200, 66, 0.5);
-}
-.badge-posfixado {
-  background: rgba(52, 152, 219, 0.15);
-  color: #5dade2;
-  border-color: rgba(52, 152, 219, 0.5);
-}
-.badge-inflacao {
-  background: rgba(46, 204, 113, 0.15);
-  color: #2ecc71;
-  border-color: rgba(46, 204, 113, 0.5);
-}
-.badge-multimercado {
-  background: rgba(155, 89, 182, 0.15);
-  color: #b981e0;
-  border-color: rgba(155, 89, 182, 0.5);
-}
-.badge-renda-variavel {
-  background: rgba(231, 76, 60, 0.15);
-  color: #e74c3c;
-  border-color: rgba(231, 76, 60, 0.5);
-}
-.badge-renda-fixa-global {
-  background: rgba(26, 188, 156, 0.15);
-  color: #1abc9c;
-  border-color: rgba(26, 188, 156, 0.5);
-}
-.badge-renda-variavel-global {
-  background: rgba(230, 126, 34, 0.15);
-  color: #e67e22;
-  border-color: rgba(230, 126, 34, 0.5);
-}
-/* Tema claro: fundo mais sólido e texto escuro para contraste WCAG */
+/* Badges estilo neon - com ajustes para tema claro */
+.badge-prefixado { background: rgba(245, 200, 66, 0.15); color: #f5c842; border-color: rgba(245, 200, 66, 0.5); }
+.badge-posfixado { background: rgba(52, 152, 219, 0.15); color: #5dade2; border-color: rgba(52, 152, 219, 0.5); }
+.badge-inflacao { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border-color: rgba(46, 204, 113, 0.5); }
+.badge-multimercado { background: rgba(155, 89, 182, 0.15); color: #b981e0; border-color: rgba(155, 89, 182, 0.5); }
+.badge-renda-variavel { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border-color: rgba(231, 76, 60, 0.5); }
+.badge-renda-fixa-global { background: rgba(26, 188, 156, 0.15); color: #1abc9c; border-color: rgba(26, 188, 156, 0.5); }
+.badge-renda-variavel-global { background: rgba(230, 126, 34, 0.15); color: #e67e22; border-color: rgba(230, 126, 34, 0.5); }
 body.light .badge-prefixado { background: rgba(212, 160, 23, 0.25); color: #7a5c0e; border-color: #d4a017; }
 body.light .badge-posfixado { background: rgba(41, 128, 185, 0.25); color: #1a5276; border-color: #2980b9; }
 body.light .badge-inflacao { background: rgba(39, 174, 96, 0.25); color: #1e6b3e; border-color: #27ae60; }
@@ -228,55 +165,59 @@ body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); co
     </div>
   </div>
 </main>
-<footer class="footer">📌 Alocações baseadas em carteiras modelo (Excel original). Passe o mouse sobre o nome do ativo para ver o CNPJ.</footer>
+<footer class="footer">📌 Alocações baseadas em carteiras modelo. Clique no nome do ativo para acessar mais informações (links serão inseridos em breve).</footer>
 
 <script>
-// CARTEIRAS com CNPJ fictício (substitua pelos reais se desejar)
+// =======================================================
+// CARTEIRAS - você pode adicionar o campo "link" para cada ativo
+// Exemplo: { nome: "Fundo XPTO", classe: "Pós-fixado", peso: 12, link: "https://exemplo.com/fundo" }
+// Se não houver link, o nome será exibido como texto simples.
+// =======================================================
 const CARTEIRAS = {
   Conservador: {
     classes: { "Prefixado": 15, "Pós-fixado": 85, "Inflação": 0, "Multimercado": 0, "Renda Variável": 0, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
-      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15, cnpj: "00.000.000/0001-01" },
-      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 15, cnpj: "00.111.222/0001-02" },
-      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 19, cnpj: "00.222.333/0001-03" },
-      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 6, cnpj: "00.333.444/0001-04" },
-      { nome: "LCI/LCA - até 1 ano - 92% CDI", classe: "Pós-fixado", peso: 27, cnpj: "00.444.555/0001-05" },
-      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7, cnpj: "00.555.666/0001-06" },
-      { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 11, cnpj: "00.666.777/0001-07" }
+      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
+      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 15 },
+      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 19 },
+      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 6 },
+      { nome: "LCI/LCA - até 1 ano - 92% CDI", classe: "Pós-fixado", peso: 27 },
+      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7 },
+      { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 11 }
     ]
   },
   Moderado: {
     classes: { "Prefixado": 13, "Pós-fixado": 58, "Inflação": 20, "Multimercado": 5, "Renda Variável": 4, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
-      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 13, cnpj: "00.000.000/0001-01" },
-      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 12, cnpj: "00.111.222/0001-02" },
-      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 11, cnpj: "00.222.333/0001-03" },
-      { nome: "Riza Statheros FIC FIM CP", classe: "Pós-fixado", peso: 6, cnpj: "00.777.888/0001-08" },
-      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 6, cnpj: "00.333.444/0001-04" },
-      { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 16, cnpj: "00.666.777/0001-07" },
-      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7, cnpj: "00.555.666/0001-06" },
-      { nome: "Trend Inflação Geral FIRF LP", classe: "Inflação", peso: 4, cnpj: "00.888.999/0001-09" },
-      { nome: "NTN-B 2035", classe: "Inflação", peso: 16, cnpj: "00.999.000/0001-10" },
-      { nome: "ACE Capital Advisory FIC FIM", classe: "Multimercado", peso: 2.5, cnpj: "01.111.222/0001-11" },
-      { nome: "Kapitalo K10 Advisory FIC FIM", classe: "Multimercado", peso: 2.5, cnpj: "01.222.333/0001-12" },
-      { nome: "Real Investor FIC FIA BDR Nível I", classe: "Renda Variável", peso: 2, cnpj: "01.333.444/0001-13" },
-      { nome: "NDIV11/NSDV11", classe: "Renda Variável", peso: 2, cnpj: "01.444.555/0001-14" }
+      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 13 },
+      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 12 },
+      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 11 },
+      { nome: "Riza Statheros FIC FIM CP", classe: "Pós-fixado", peso: 6 },
+      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 6 },
+      { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 16 },
+      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7 },
+      { nome: "Trend Inflação Geral FIRF LP", classe: "Inflação", peso: 4 },
+      { nome: "NTN-B 2035", classe: "Inflação", peso: 16 },
+      { nome: "ACE Capital Advisory FIC FIM", classe: "Multimercado", peso: 2.5 },
+      { nome: "Kapitalo K10 Advisory FIC FIM", classe: "Multimercado", peso: 2.5 },
+      { nome: "Real Investor FIC FIA BDR Nível I", classe: "Renda Variável", peso: 2 },
+      { nome: "NDIV11/NSDV11", classe: "Renda Variável", peso: 2 }
     ]
   },
   Agressivo: {
     classes: { "Prefixado": 15, "Pós-fixado": 50, "Inflação": 24, "Multimercado": 5, "Renda Variável": 6, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
-      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15, cnpj: "00.000.000/0001-01" },
-      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 8, cnpj: "00.333.444/0001-04" },
-      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 19, cnpj: "00.111.222/0001-02" },
-      { nome: "Riza Statheros FIC FIM CP", classe: "Pós-fixado", peso: 6, cnpj: "00.777.888/0001-08" },
-      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7, cnpj: "00.555.666/0001-06" },
-      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 10, cnpj: "00.222.333/0001-03" },
-      { nome: "NTN-B 2035", classe: "Inflação", peso: 24, cnpj: "00.999.000/0001-10" },
-      { nome: "ACE Capital Advisory FIC FIM", classe: "Multimercado", peso: 2.5, cnpj: "01.111.222/0001-11" },
-      { nome: "Kapitalo K10 Advisory FIC FIM", classe: "Multimercado", peso: 2.5, cnpj: "01.222.333/0001-12" },
-      { nome: "Real Investor FIC FIA BDR Nível I", classe: "Renda Variável", peso: 3, cnpj: "01.333.444/0001-13" },
-      { nome: "NDIV11/NSDV11", classe: "Renda Variável", peso: 3, cnpj: "01.444.555/0001-14" }
+      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
+      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 8 },
+      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 19 },
+      { nome: "Riza Statheros FIC FIM CP", classe: "Pós-fixado", peso: 6 },
+      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7 },
+      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 10 },
+      { nome: "NTN-B 2035", classe: "Inflação", peso: 24 },
+      { nome: "ACE Capital Advisory FIC FIM", classe: "Multimercado", peso: 2.5 },
+      { nome: "Kapitalo K10 Advisory FIC FIM", classe: "Multimercado", peso: 2.5 },
+      { nome: "Real Investor FIC FIA BDR Nível I", classe: "Renda Variável", peso: 3 },
+      { nome: "NDIV11/NSDV11", classe: "Renda Variável", peso: 3 }
     ]
   }
 };
@@ -326,14 +267,24 @@ function renderAtivosRecomendados() {
     for (let ativo of lista) {
       const pesoFormatado = ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`;
       const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
-      const tooltipText = `${ativo.nome} • CNPJ: ${ativo.cnpj || 'não informado'}`;
-      html += `
-        <div class="ativo-row">
-          <span class="ativo-nome" data-tooltip="${tooltipText.replace(/"/g, '&quot;')}">${ativo.nome}</span>
-          <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
-          <span class="ativo-peso">${pesoFormatado}</span>
-        </div>
-      `;
+      // Se existir o campo "link", cria um link clicável. Caso contrário, apenas texto.
+      if (ativo.link && ativo.link.trim() !== "") {
+        html += `
+          <div class="ativo-row">
+            <a href="${ativo.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome">${ativo.nome}</a>
+            <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
+            <span class="ativo-peso">${pesoFormatado}</span>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="ativo-row">
+            <span class="ativo-nome" style="cursor: default;">${ativo.nome}</span>
+            <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
+            <span class="ativo-peso">${pesoFormatado}</span>
+          </div>
+        `;
+      }
     }
   }
   html += `</div>`;
