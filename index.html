@@ -144,6 +144,11 @@ body.light .perfil-btn.ativo {
   margin-left: auto;
 }
 
+/* Para ativos de Previdência: a badge da classe vai para a direita */
+.prev-row .ativo-classe {
+  margin-left: auto;
+}
+
 /* Badges padrão */
 .badge-prefixado { background: rgba(245, 200, 66, 0.15); color: #f5c842; border-color: rgba(245, 200, 66, 0.5); }
 .badge-posfixado { background: rgba(52, 152, 219, 0.15); color: #5dade2; border-color: rgba(52, 152, 219, 0.5); }
@@ -355,7 +360,6 @@ const badgeClassMap = {
 
 let perfilAtivo = "Moderado";
 
-// Função de escape HTML para segurança
 function escapeHtml(text) {
   if (!text) return '';
   return text
@@ -405,9 +409,12 @@ function montarHtmlAtivo(ativo, exibirPeso = true, isPrev = false) {
   
   const prevBadge = isPrev ? `<span class="badge-previdencia">Previdência</span>` : '';
   const classeBadge = `<span class="ativo-classe ${badgeClasse}">${escapeHtml(ativo.classe)}</span>`;
-  const pesoHtml = exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : `<span class="ativo-peso" style="opacity:0.7">—</span>`;
   
-  return `<div class="ativo-row">${nomeHtml}${prevBadge}${classeBadge}${pesoHtml}</div>`;
+  // ATENÇÃO: só adiciona pesoHtml se exibirPeso for true
+  const pesoHtml = exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '';
+  
+  const rowClass = isPrev ? 'ativo-row prev-row' : 'ativo-row';
+  return `<div class="${rowClass}">${nomeHtml}${prevBadge}${classeBadge}${pesoHtml}</div>`;
 }
 
 function renderAtivosRecomendados() {
@@ -447,6 +454,7 @@ function renderAtivosRecomendados() {
       if (!listaPrev || listaPrev.length === 0) continue;
       html += `<div class="separator-prev">${escapeHtml(classe)}</div>`;
       for (let atv of listaPrev) {
+        // isPrev = true → não exibe peso, badge azul e classe alinhada à direita
         html += montarHtmlAtivo(atv, false, true);
       }
     }
@@ -456,7 +464,6 @@ function renderAtivosRecomendados() {
   html += `</div>`;
   document.getElementById('ativosRecomendadosContainer').innerHTML = html;
   
-  // Reatribuir eventos dos botões de previdência
   document.querySelectorAll('[data-prev-toggle]').forEach(btn => {
     btn.removeEventListener('click', togglePrevContent);
     btn.addEventListener('click', togglePrevContent);
@@ -513,14 +520,13 @@ function initTheme() {
   });
 }
 
-// Atualiza data e hora no header
 function updateDateTime() {
   const now = new Date();
   const options = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
   document.getElementById('hDate').textContent = now.toLocaleDateString('pt-BR', options);
 }
 updateDateTime();
-setInterval(updateDateTime, 60000); // atualiza a cada minuto
+setInterval(updateDateTime, 60000);
 
 initTheme();
 renderPerfis();
