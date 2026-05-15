@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Carteiras Recomendadas · Perfil Conservador / Moderado / Agressivo</title>
+<title>Carteiras Recomendadas · Perfil Conservador / Moderado / Agressivo + Previdência</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -126,7 +126,7 @@ body.light .perfil-btn.ativo {
 }
 .ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; font-family: monospace; }
 
-/* Badges estilo neon - com ajustes para tema claro */
+/* Badges estilo neon */
 .badge-prefixado { background: rgba(245, 200, 66, 0.15); color: #f5c842; border-color: rgba(245, 200, 66, 0.5); }
 .badge-posfixado { background: rgba(52, 152, 219, 0.15); color: #5dade2; border-color: rgba(52, 152, 219, 0.5); }
 .badge-inflacao { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border-color: rgba(46, 204, 113, 0.5); }
@@ -141,6 +141,42 @@ body.light .badge-multimercado { background: rgba(142, 68, 173, 0.25); color: #6
 body.light .badge-renda-variavel { background: rgba(192, 57, 43, 0.25); color: #922b21; border-color: #c0392b; }
 body.light .badge-renda-fixa-global { background: rgba(22, 160, 133, 0.25); color: #0e6251; border-color: #16a085; }
 body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); color: #a04000; border-color: #d35400; }
+
+/* Botão e seção Previdência */
+.prev-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 40px;
+  padding: 10px 20px;
+  margin: 12px 0 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--gold);
+}
+.prev-button:hover {
+  background: rgba(245, 200, 66, 0.1);
+  border-color: var(--gold);
+}
+.prev-content {
+  display: none;
+  margin-top: 12px;
+  border-left: 2px solid var(--gold);
+  padding-left: 12px;
+}
+.prev-content.show {
+  display: block;
+}
+.separator-prev {
+  font-size: 11px;
+  color: var(--text3);
+  margin: 10px 0 6px;
+  letter-spacing: 1px;
+}
 
 .footer { text-align: center; font-size: 11px; color: var(--text3); padding: 1.5rem; border-top: 1px solid var(--footer-border); margin-top: 2rem; }
 </style>
@@ -165,17 +201,17 @@ body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); co
     </div>
   </div>
 </main>
-<footer class="footer">📌 Clique no nome do ativo para acessar mais informações. Percentuais por classe e ativo conforme modelo original.</footer>
+<footer class="footer">📌 Clique no nome do ativo para acessar mais informações. A seção Previdência é expansível e os pesos indicam "—" (sugestões sem alocação fixa).</footer>
 
 <script>
 // ============================================================
-// BASE DE DADOS COM LINKS (e casos especiais com dois links)
+// BASE DE DADOS COMPLETA COM ATIVOS NORMAIS + PREVIDÊNCIA
 // ============================================================
 const CARTEIRAS = {
   Conservador: {
     classes: { "Prefixado": 15, "Pós-fixado": 85, "Inflação": 0, "Multimercado": 0, "Renda Variável": 0, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
-      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15, link: null }, // sem link
+      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15, link: null },
       { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 15, link: "https://maisretorno.com/fundo/arx-fuji-fic-fif-rf-cp-rl" },
       { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 19, multiLink: [
           { parte: "Bradesco Ultra FIC FIRF LP CP (IQ)", link: "https://maisretorno.com/fundo/bradesco-ultra-fif-cic-rf-cp-lp-rl" },
@@ -185,6 +221,13 @@ const CARTEIRAS = {
       { nome: "LCI/LCA - até 1 ano - 92% CDI", classe: "Pós-fixado", peso: 27, link: null },
       { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7, link: "https://maisretorno.com/fundo/valora-vanguard-fic-direitos-creditorios" },
       { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 11, link: "https://maisretorno.com/fundo/xp-liquidez-fic-rf-referenciado-di-cp-rl-1" }
+    ],
+    previdencia: [
+      { nome: "Brave Prev XP Seg FIC FIRF CP", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/brave-prev-xp-seguros-fic-fi-rf-cp-rl-1" },
+      { nome: "Patria Prev XP Seg", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/patria-previdenciario-xp-seg-fic-multimercado-cp-rl" },
+      { nome: "AZ Quest Altro Prev XP Seg FIC FIM CP", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/az-quest-altro-prev-xp-seg-fic-multimercado-cp-rl-1" },
+      { nome: "XP Liquidez 50 XP Seg Prev FIRF RL", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/xp-liquidez-50-previdenciario-fi-rf-rl-1" },
+      { nome: "XP 2035B ADVISORY SEGUROS PREV FUNDO DE INVESTIMENTO EM COTAS DE FUNDOS DE INVESTIMENTO RENDA FIXA", classe: "Inflação", link: "https://maisretorno.com/fundo/xp-2035b-advisory-seguros-prev-fic-rf-rl" }
     ]
   },
   Moderado: {
@@ -209,6 +252,23 @@ const CARTEIRAS = {
           { parte: "NDIV11", link: "https://maisretorno.com/etf/ndiv11" },
           { parte: "NSDV11", link: "https://maisretorno.com/etf/nsdv11" }
         ] }
+    ],
+    previdencia: [
+      { nome: "Brave Prev XP Seg FIC FIRF CP", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/brave-prev-xp-seguros-fic-fi-rf-cp-rl-1" },
+      { nome: "Patria Prev XP Seg", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/patria-previdenciario-xp-seg-fic-multimercado-cp-rl" },
+      { nome: "AZ Quest Altro Prev XP Seg FIC FIM CP", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/az-quest-altro-prev-xp-seg-fic-multimercado-cp-rl-1" },
+      { nome: "XP Liquidez 50 XP Seg Prev FIRF RL", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/xp-liquidez-50-previdenciario-fi-rf-rl-1" },
+      { nome: "XP 2035B ADVISORY SEGUROS PREV FUNDO DE INVESTIMENTO EM COTAS DE FUNDOS DE INVESTIMENTO RENDA FIXA", classe: "Inflação", link: "https://maisretorno.com/fundo/xp-2035b-advisory-seguros-prev-fic-rf-rl" },
+      { nome: "Kapitalo K10 Global Prev XP Seg Adv FIC FIM", classe: "Multimercado", link: "https://maisretorno.com/fundo/kapitalo-k10-prev-xp-seguros-advisory-fic-multimercado-rl-1" },
+      { nome: "Ace Capital Prev IQ XP Seg FIC FIM", classe: "Multimercado", link: "https://maisretorno.com/fundo/ace-capital-prev-iq-xp-seguros-fif-da-cic-multimercado-rl" },
+      { nome: "Real Investor 100 XP Seg Ad FICFIA (IQ) ou Guepardo 70 XP Seg Prev FIC FIM (IG)", classe: "Renda Variável", multiLink: [
+          { parte: "Real Investor 100 XP Seg Ad FICFIA (IQ)", link: "https://maisretorno.com/fundo/real-investor-100-xp-seg-advisory-fic-acoes-rl-1" },
+          { parte: "Guepardo 70 XP Seg Prev FIC FIM (IG)", link: "https://maisretorno.com/fundo/guepardo-70-xp-seg-prev-fic-multimercado-rl-1" }
+        ] },
+      { nome: "M Global 40 XP Seg FIC FIM (IQ) / Dahlia Global 50 Adv XP Seg Prev FIC FIM (IG)", classe: "Renda Variável Global", multiLink: [
+          { parte: "M Global 40 XP Seg FIC FIM (IQ)", link: "https://maisretorno.com/fundo/ms-global-xp-seguros-multimercado-prev-cic-classes-investimento-previdenciaria-rl" },
+          { parte: "Dahlia Global 50 Adv XP Seg Prev FIC FIM (IG)", link: "https://maisretorno.com/fundo/dahlia-global-50-advisory-xp-seguros-previdencia-fic-fif-multimercado-rl" }
+        ] }
     ]
   },
   Agressivo: {
@@ -230,6 +290,23 @@ const CARTEIRAS = {
       { nome: "NDIV11 / NSDV11", classe: "Renda Variável", peso: 3, multiLink: [
           { parte: "NDIV11", link: "https://maisretorno.com/etf/ndiv11" },
           { parte: "NSDV11", link: "https://maisretorno.com/etf/nsdv11" }
+        ] }
+    ],
+    previdencia: [  // mesma composição do Moderado
+      { nome: "Brave Prev XP Seg FIC FIRF CP", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/brave-prev-xp-seguros-fic-fi-rf-cp-rl-1" },
+      { nome: "Patria Prev XP Seg", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/patria-previdenciario-xp-seg-fic-multimercado-cp-rl" },
+      { nome: "AZ Quest Altro Prev XP Seg FIC FIM CP", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/az-quest-altro-prev-xp-seg-fic-multimercado-cp-rl-1" },
+      { nome: "XP Liquidez 50 XP Seg Prev FIRF RL", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/xp-liquidez-50-previdenciario-fi-rf-rl-1" },
+      { nome: "XP 2035B ADVISORY SEGUROS PREV FUNDO DE INVESTIMENTO EM COTAS DE FUNDOS DE INVESTIMENTO RENDA FIXA", classe: "Inflação", link: "https://maisretorno.com/fundo/xp-2035b-advisory-seguros-prev-fic-rf-rl" },
+      { nome: "Kapitalo K10 Global Prev XP Seg Adv FIC FIM", classe: "Multimercado", link: "https://maisretorno.com/fundo/kapitalo-k10-prev-xp-seguros-advisory-fic-multimercado-rl-1" },
+      { nome: "Ace Capital Prev IQ XP Seg FIC FIM", classe: "Multimercado", link: "https://maisretorno.com/fundo/ace-capital-prev-iq-xp-seguros-fif-da-cic-multimercado-rl" },
+      { nome: "Real Investor 100 XP Seg Ad FICFIA (IQ) ou Guepardo 70 XP Seg Prev FIC FIM (IG)", classe: "Renda Variável", multiLink: [
+          { parte: "Real Investor 100 XP Seg Ad FICFIA (IQ)", link: "https://maisretorno.com/fundo/real-investor-100-xp-seg-advisory-fic-acoes-rl-1" },
+          { parte: "Guepardo 70 XP Seg Prev FIC FIM (IG)", link: "https://maisretorno.com/fundo/guepardo-70-xp-seg-prev-fic-multimercado-rl-1" }
+        ] },
+      { nome: "M Global 40 XP Seg FIC FIM (IQ) / Dahlia Global 50 Adv XP Seg Prev FIC FIM (IG)", classe: "Renda Variável Global", multiLink: [
+          { parte: "M Global 40 XP Seg FIC FIM (IQ)", link: "https://maisretorno.com/fundo/ms-global-xp-seguros-multimercado-prev-cic-classes-investimento-previdenciaria-rl" },
+          { parte: "Dahlia Global 50 Adv XP Seg Prev FIC FIM (IG)", link: "https://maisretorno.com/fundo/dahlia-global-50-advisory-xp-seguros-previdencia-fic-fif-multimercado-rl" }
         ] }
     ]
   }
@@ -261,64 +338,73 @@ function renderCarteiraRecomendada() {
   container.innerHTML = html;
 }
 
+function montarHtmlAtivo(ativo, exibirPeso = true) {
+  const pesoFormatado = (ativo.peso !== undefined && exibirPeso) ? (ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`) : "—";
+  const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
+  
+  if (ativo.multiLink) {
+    let nomeHtml = '';
+    for (let i = 0; i < ativo.multiLink.length; i++) {
+      const item = ativo.multiLink[i];
+      nomeHtml += `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome" style="display: inline-block;">${item.parte}</a>`;
+      if (i < ativo.multiLink.length - 1) nomeHtml += ` <span style="color: var(--text3);">/</span> `;
+    }
+    return `<div class="ativo-row"><div style="flex:1; display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline;">${nomeHtml}</div><span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>${exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '<span class="ativo-peso" style="opacity:0.7">—</span>'}</div>`;
+  } 
+  else if (ativo.link && ativo.link.trim() !== "") {
+    return `<div class="ativo-row"><a href="${ativo.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome">${ativo.nome}</a><span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>${exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '<span class="ativo-peso" style="opacity:0.7">—</span>'}</div>`;
+  } 
+  else {
+    return `<div class="ativo-row"><span class="ativo-nome" style="cursor: default;">${ativo.nome}</span><span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>${exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '<span class="ativo-peso" style="opacity:0.7">—</span>'}</div>`;
+  }
+}
+
 function renderAtivosRecomendados() {
   const data = CARTEIRAS[perfilAtivo];
-  if (!data || !data.ativos || data.ativos.length === 0) {
-    document.getElementById('ativosRecomendadosContainer').innerHTML = `<div class="empty-ativos">📭 Nenhum ativo detalhado.</div>`;
-    return;
-  }
+  if (!data) return;
+  
+  // ativos normais
   const ativosPorClasse = {};
   for (let ativo of data.ativos) {
     if (!ativosPorClasse[ativo.classe]) ativosPorClasse[ativo.classe] = [];
     ativosPorClasse[ativo.classe].push(ativo);
   }
+  
   let html = `<div class="ativos-container">`;
   for (let classe of CLASSES_ORDER) {
     const lista = ativosPorClasse[classe];
     if (!lista || lista.length === 0) continue;
     html += `<div style="margin-top:0.8rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
     for (let ativo of lista) {
-      const pesoFormatado = ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`;
-      const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
-      
-      // Caso especial com múltiplos links
-      if (ativo.multiLink) {
-        let nomeHtml = '';
-        for (let i = 0; i < ativo.multiLink.length; i++) {
-          const item = ativo.multiLink[i];
-          nomeHtml += `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome" style="display: inline-block;">${item.parte}</a>`;
-          if (i < ativo.multiLink.length - 1) nomeHtml += ` <span style="color: var(--text3);">/</span> `;
-        }
-        html += `
-          <div class="ativo-row">
-            <div style="flex:1; display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline;">${nomeHtml}</div>
-            <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
-            <span class="ativo-peso">${pesoFormatado}</span>
-          </div>
-        `;
-      }
-      // Caso com link único
-      else if (ativo.link && ativo.link.trim() !== "") {
-        html += `
-          <div class="ativo-row">
-            <a href="${ativo.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome">${ativo.nome}</a>
-            <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
-            <span class="ativo-peso">${pesoFormatado}</span>
-          </div>
-        `;
-      }
-      // Sem link
-      else {
-        html += `
-          <div class="ativo-row">
-            <span class="ativo-nome" style="cursor: default;">${ativo.nome}</span>
-            <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
-            <span class="ativo-peso">${pesoFormatado}</span>
-          </div>
-        `;
-      }
+      html += montarHtmlAtivo(ativo, true);
     }
   }
+  
+  // Seção Previdência (expansível)
+  if (data.previdencia && data.previdencia.length > 0) {
+    html += `<div style="margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 8px;">`;
+    html += `<div class="prev-button" onclick="this.nextElementSibling.classList.toggle('show'); this.querySelector('.prev-arrow').textContent = this.nextElementSibling.classList.contains('show') ? '▼' : '▶';">`;
+    html += `<span class="prev-arrow">▶</span> 📌 Previdência <span style="font-size: 11px; margin-left: 6px;">(clique para expandir)</span>`;
+    html += `</div>`;
+    html += `<div class="prev-content">`;
+    
+    // agrupar ativos de previdência por classe
+    const prevPorClasse = {};
+    for (let atv of data.previdencia) {
+      if (!prevPorClasse[atv.classe]) prevPorClasse[atv.classe] = [];
+      prevPorClasse[atv.classe].push(atv);
+    }
+    for (let classe of CLASSES_ORDER) {
+      const listaPrev = prevPorClasse[classe];
+      if (!listaPrev || listaPrev.length === 0) continue;
+      html += `<div class="separator-prev">${classe}</div>`;
+      for (let atv of listaPrev) {
+        html += montarHtmlAtivo(atv, false);  // sem peso (exibe "—")
+      }
+    }
+    html += `</div></div>`;
+  }
+  
   html += `</div>`;
   document.getElementById('ativosRecomendadosContainer').innerHTML = html;
 }
