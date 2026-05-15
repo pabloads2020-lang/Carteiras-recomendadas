@@ -6,6 +6,39 @@
 <title>Carteiras Recomendadas · Perfil Conservador / Moderado / Agressivo + Previdência</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ============================================
+   CENTRAL DE VARIÁVEIS DE FONTE
+   ============================================ */
+:root {
+  /* Tamanhos base (desktop) */
+  --font-size-body: 16px;           /* padrão do navegador */
+  --font-size-header-logo: 14px;
+  --font-size-header-date: 12px;
+  --font-size-card-title: 12px;
+  --font-size-perfil-btn: 15px;
+  --font-size-classe-nome: 14px;
+  --font-size-classe-pct: 15px;
+  --font-size-ativo-nome: 13px;     /* nome do ativo (desktop) */
+  --font-size-badge: 11px;          /* badges de classe e previdência */
+  --font-size-ativo-peso: 15px;
+  --font-size-footer: 11px;
+  --font-size-prev-button: 14px;
+  --font-size-separator-prev: 11px;
+}
+
+/* Ajustes para mobile (telas <= 600px) */
+@media (max-width: 600px) {
+  :root {
+    --font-size-card-title: 11px;
+    --font-size-classe-nome: 13px;
+    --font-size-ativo-nome: 14px;   /* um pouco menor no celular */
+    --font-size-badge: 10px;
+    --font-size-ativo-peso: 13px;
+    --font-size-perfil-btn: 14px;
+  }
+}
+
+/* Cores e outros (sem alteração) */
 :root {
   --bg: #0e1117; --bg2: #161b25; --bg3: #1c2333;
   --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
@@ -36,23 +69,24 @@ body {
   color: var(--text); 
   min-height: 100vh;
   transition: background 0.2s ease, color 0.2s ease;
+  font-size: var(--font-size-body);
 }
 
 .header { background: var(--header-bg); border-bottom: 1px solid var(--header-border); padding: 0 1rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; transition: background 0.2s, border 0.2s; }
-.header-logo { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.header-logo { display: flex; align-items: center; gap: 8px; font-size: var(--font-size-header-logo); font-weight: 600; }
 .dot { width: 28px; height: 28px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #000; }
 .header-right { display: flex; align-items: center; gap: 0.8rem; }
-.header-date { font-size: 12px; color: var(--text3); }
+.header-date { font-size: var(--font-size-header-date); color: var(--text3); }
 .theme-toggle { background: var(--bg3); border: 1px solid var(--border2); border-radius: 30px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: all 0.2s; }
 .theme-toggle:hover { border-color: var(--gold); transform: scale(1.05); }
 
 .main { max-width: 1300px; margin: 0 auto; padding: 1.5rem; }
 .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.4rem; margin-bottom: 0; height: 100%; transition: background 0.2s, border 0.2s; }
-.card-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: var(--font-size-card-title); font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 
 .perfis-row { display: flex; gap: 12px; margin-bottom: 1.8rem; flex-wrap: wrap; justify-content: center; }
 .perfil-btn {
-  flex: 1; min-width: 120px; padding: 12px 16px; border-radius: 60px; font-size: 15px; font-weight: 600;
+  flex: 1; min-width: 120px; padding: 12px 16px; border-radius: 60px; font-size: var(--font-size-perfil-btn); font-weight: 600;
   cursor: pointer; text-align: center; transition: all 0.2s;
   background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
 }
@@ -77,12 +111,10 @@ body.light .perfil-btn.ativo {
 @media (max-width: 800px) { 
   .grid2 { grid-template-columns: 1fr; gap: 1.2rem; }
   .card { padding: 1.2rem; }
-  .perfil-btn { padding: 14px 12px; min-width: 100px; font-size: 14px; }
+  .perfil-btn { padding: 14px 12px; min-width: 100px; }
 }
 @media (max-width: 600px) {
   .main { padding: 1rem; }
-  .card-title { font-size: 11px; }
-  .classe-nome, .ativo-nome { font-size: 13px; }
   .bar-wrapper { width: 70px; }
 }
 
@@ -92,10 +124,10 @@ body.light .perfil-btn.ativo {
 .c0 { background: #f5c842; } .c1 { background: #3498db; } .c2 { background: #2ecc71; }
 .c3 { background: #9b59b6; } .c4 { background: #e74c3c; } .c5 { background: #1abc9c; }
 .c6 { background: #e67e22; } .c7 { background: #95a5a6; }
-.classe-nome { flex: 1; font-size: 14px; font-weight: 500; }
+.classe-nome { flex: 1; font-size: var(--font-size-classe-nome); font-weight: 500; }
 .bar-wrapper { width: 100px; height: 6px; background: var(--bar-bg); border-radius: 10px; overflow: hidden; }
 .bar-fill { height: 100%; background: var(--gold); border-radius: 10px; }
-.classe-pct { font-size: 15px; font-weight: 700; color: var(--gold); min-width: 50px; text-align: right; font-family: monospace; }
+.classe-pct { font-size: var(--font-size-classe-pct); font-weight: 700; color: var(--gold); min-width: 50px; text-align: right; font-family: monospace; }
 
 .ativos-container { margin-top: 0.8rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
 .ativo-row { 
@@ -118,13 +150,14 @@ body.light .perfil-btn.ativo {
   cursor: pointer;
   transition: color 0.2s, text-decoration 0.2s;
   word-break: break-word;
+  font-size: var(--font-size-ativo-nome);
 }
 .ativo-nome:hover {
   color: var(--gold);
   text-decoration: underline;
 }
 .ativo-classe, .badge-previdencia {
-  font-size: 11px;
+  font-size: var(--font-size-badge);
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 40px;
@@ -142,6 +175,7 @@ body.light .perfil-btn.ativo {
   font-family: monospace;
   flex-shrink: 0;
   margin-left: auto;
+  font-size: var(--font-size-ativo-peso);
 }
 
 /* Para ativos de Previdência: a badge da classe vai para a direita */
@@ -158,7 +192,6 @@ body.light .perfil-btn.ativo {
 .badge-renda-fixa-global { background: rgba(26, 188, 156, 0.15); color: #1abc9c; border-color: rgba(26, 188, 156, 0.5); }
 .badge-renda-variavel-global { background: rgba(230, 126, 34, 0.15); color: #e67e22; border-color: rgba(230, 126, 34, 0.5); }
 
-/* Badge exclusiva para Previdência */
 .badge-previdencia {
   background: #1e6df2;
   color: #ffffff;
@@ -178,7 +211,6 @@ body.light .badge-renda-variavel { background: rgba(192, 57, 43, 0.25); color: #
 body.light .badge-renda-fixa-global { background: rgba(22, 160, 133, 0.25); color: #0e6251; border-color: #16a085; }
 body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); color: #a04000; border-color: #d35400; }
 
-/* Botão e seção Previdência */
 .prev-button {
   display: inline-flex;
   align-items: center;
@@ -189,7 +221,7 @@ body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); co
   padding: 10px 20px;
   margin: 12px 0 8px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--font-size-prev-button);
   cursor: pointer;
   transition: all 0.2s;
   color: var(--gold);
@@ -208,13 +240,13 @@ body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); co
   display: block;
 }
 .separator-prev {
-  font-size: 11px;
+  font-size: var(--font-size-separator-prev);
   color: var(--text3);
   margin: 10px 0 6px;
   letter-spacing: 1px;
 }
 
-.footer { text-align: center; font-size: 11px; color: var(--text3); padding: 1.5rem; border-top: 1px solid var(--footer-border); margin-top: 2rem; transition: border 0.2s; }
+.footer { text-align: center; font-size: var(--font-size-footer); color: var(--text3); padding: 1.5rem; border-top: 1px solid var(--footer-border); margin-top: 2rem; transition: border 0.2s; }
 </style>
 </head>
 <body>
@@ -410,7 +442,6 @@ function montarHtmlAtivo(ativo, exibirPeso = true, isPrev = false) {
   const prevBadge = isPrev ? `<span class="badge-previdencia">Previdência</span>` : '';
   const classeBadge = `<span class="ativo-classe ${badgeClasse}">${escapeHtml(ativo.classe)}</span>`;
   
-  // ATENÇÃO: só adiciona pesoHtml se exibirPeso for true
   const pesoHtml = exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '';
   
   const rowClass = isPrev ? 'ativo-row prev-row' : 'ativo-row';
@@ -454,7 +485,6 @@ function renderAtivosRecomendados() {
       if (!listaPrev || listaPrev.length === 0) continue;
       html += `<div class="separator-prev">${escapeHtml(classe)}</div>`;
       for (let atv of listaPrev) {
-        // isPrev = true → não exibe peso, badge azul e classe alinhada à direita
         html += montarHtmlAtivo(atv, false, true);
       }
     }
