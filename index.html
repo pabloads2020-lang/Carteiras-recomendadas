@@ -34,10 +34,11 @@ body {
   font-family: 'DM Sans', 'Atkinson Hyperlegible', sans-serif; 
   background: var(--bg); 
   color: var(--text); 
-  min-height: 100vh; 
+  min-height: 100vh;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.header { background: var(--header-bg); border-bottom: 1px solid var(--header-border); padding: 0 1rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header { background: var(--header-bg); border-bottom: 1px solid var(--header-border); padding: 0 1rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; transition: background 0.2s, border 0.2s; }
 .header-logo { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
 .dot { width: 28px; height: 28px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #000; }
 .header-right { display: flex; align-items: center; gap: 0.8rem; }
@@ -46,7 +47,7 @@ body {
 .theme-toggle:hover { border-color: var(--gold); transform: scale(1.05); }
 
 .main { max-width: 1300px; margin: 0 auto; padding: 1.5rem; }
-.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.4rem; margin-bottom: 0; height: 100%; transition: all 0.2s; }
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.4rem; margin-bottom: 0; height: 100%; transition: background 0.2s, border 0.2s; }
 .card-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 
 .perfis-row { display: flex; gap: 12px; margin-bottom: 1.8rem; flex-wrap: wrap; justify-content: center; }
@@ -98,17 +99,24 @@ body.light .perfil-btn.ativo {
 
 .ativos-container { margin-top: 0.8rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
 .ativo-row { 
-  display: flex; align-items: center; gap: 12px; padding: 8px 6px; border-radius: 8px; 
-  background: var(--ativo-item-bg); margin-bottom: 6px; font-size: 13px;
+  display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  background: var(--ativo-item-bg);
+  margin-bottom: 8px;
+  transition: background 0.2s;
 }
 .ativo-nome {
-  flex: 1; font-weight: 500;
+  flex: 1 1 180px;
+  min-width: 140px;
+  font-weight: 500;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
   transition: color 0.2s, text-decoration 0.2s;
-  white-space: normal;
   word-break: break-word;
 }
 .ativo-nome:hover {
@@ -124,8 +132,17 @@ body.light .perfil-btn.ativo {
   border-width: 1px;
   border-style: solid;
   white-space: nowrap;
+  flex-shrink: 0;
 }
-.ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; font-family: monospace; }
+.ativo-peso { 
+  font-weight: 700; 
+  color: var(--gold); 
+  min-width: 55px; 
+  text-align: right; 
+  font-family: monospace;
+  flex-shrink: 0;
+  margin-left: auto;
+}
 
 /* Badges padrão */
 .badge-prefixado { background: rgba(245, 200, 66, 0.15); color: #f5c842; border-color: rgba(245, 200, 66, 0.5); }
@@ -136,18 +153,16 @@ body.light .perfil-btn.ativo {
 .badge-renda-fixa-global { background: rgba(26, 188, 156, 0.15); color: #1abc9c; border-color: rgba(26, 188, 156, 0.5); }
 .badge-renda-variavel-global { background: rgba(230, 126, 34, 0.15); color: #e67e22; border-color: rgba(230, 126, 34, 0.5); }
 
-/* Badge exclusiva para Previdência - azul sólido com texto branco */
+/* Badge exclusiva para Previdência */
 .badge-previdencia {
   background: #1e6df2;
   color: #ffffff;
   border: none;
   box-shadow: none;
-  text-shadow: none;
 }
 body.light .badge-previdencia {
   background: #1e6df2;
   color: #ffffff;
-  border: none;
 }
 
 body.light .badge-prefixado { background: rgba(212, 160, 23, 0.25); color: #7a5c0e; border-color: #d4a017; }
@@ -194,7 +209,7 @@ body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); co
   letter-spacing: 1px;
 }
 
-.footer { text-align: center; font-size: 11px; color: var(--text3); padding: 1.5rem; border-top: 1px solid var(--footer-border); margin-top: 2rem; }
+.footer { text-align: center; font-size: 11px; color: var(--text3); padding: 1.5rem; border-top: 1px solid var(--footer-border); margin-top: 2rem; transition: border 0.2s; }
 </style>
 </head>
 <body>
@@ -340,6 +355,17 @@ const badgeClassMap = {
 
 let perfilAtivo = "Moderado";
 
+// Função de escape HTML para segurança
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function renderCarteiraRecomendada() {
   const data = CARTEIRAS[perfilAtivo];
   if (!data) return;
@@ -348,43 +374,39 @@ function renderCarteiraRecomendada() {
   for (let classe of CLASSES_ORDER) {
     const peso = data.classes[classe] || 0;
     const corClasse = CORES_CLASS[classe] || "c7";
-    html += `<div class="classe-item"><div class="dot-class ${corClasse}"></div><span class="classe-nome">${classe}</span><div class="bar-wrapper"><div class="bar-fill" style="width: ${peso}%;"></div></div><span class="classe-pct">${peso}%</span></div>`;
+    html += `<div class="classe-item"><div class="dot-class ${corClasse}"></div><span class="classe-nome">${escapeHtml(classe)}</span><div class="bar-wrapper"><div class="bar-fill" style="width: ${peso}%;"></div></div><span class="classe-pct">${peso}%</span></div>`;
   }
   html += `<div style="margin-top: 16px; text-align: right; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 12px;">✓ Alocação total: 100%</div>`;
   container.innerHTML = html;
 }
 
-// Função que monta o HTML de um ativo
-// isPrev: se true, adiciona a badge "Previdência" (azul sólido com texto branco)
 function montarHtmlAtivo(ativo, exibirPeso = true, isPrev = false) {
   const pesoFormatado = (ativo.peso !== undefined && exibirPeso) ? (ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`) : "—";
   const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
   
-  // Parte do nome (pode ser link ou texto)
   let nomeHtml = '';
   if (ativo.multiLink) {
     let parts = [];
     for (let i = 0; i < ativo.multiLink.length; i++) {
       const item = ativo.multiLink[i];
-      parts.push(`<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome" style="display: inline-block;">${item.parte}</a>`);
+      const linkEscaped = escapeHtml(item.link);
+      const parteEscaped = escapeHtml(item.parte);
+      parts.push(`<a href="${linkEscaped}" target="_blank" rel="noopener noreferrer" class="ativo-nome" style="display: inline-block;">${parteEscaped}</a>`);
     }
     nomeHtml = `<div style="flex:1; display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline;">${parts.join(' <span style="color: var(--text3);">/</span> ')}</div>`;
   } else if (ativo.link && ativo.link.trim() !== "") {
-    nomeHtml = `<a href="${ativo.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome">${ativo.nome}</a>`;
+    const linkEscaped = escapeHtml(ativo.link);
+    const nomeEscaped = escapeHtml(ativo.nome);
+    nomeHtml = `<a href="${linkEscaped}" target="_blank" rel="noopener noreferrer" class="ativo-nome">${nomeEscaped}</a>`;
   } else {
-    nomeHtml = `<span class="ativo-nome" style="cursor: default;">${ativo.nome}</span>`;
+    const nomeEscaped = escapeHtml(ativo.nome);
+    nomeHtml = `<span class="ativo-nome" style="cursor: default;">${nomeEscaped}</span>`;
   }
   
-  // Badge previdência (apenas se isPrev = true)
   const prevBadge = isPrev ? `<span class="badge-previdencia">Previdência</span>` : '';
-  
-  // Badge da classe de investimento
-  const classeBadge = `<span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>`;
-  
-  // Peso
+  const classeBadge = `<span class="ativo-classe ${badgeClasse}">${escapeHtml(ativo.classe)}</span>`;
   const pesoHtml = exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : `<span class="ativo-peso" style="opacity:0.7">—</span>`;
   
-  // Ordem: nomeHtml + prevBadge + classeBadge + pesoHtml
   return `<div class="ativo-row">${nomeHtml}${prevBadge}${classeBadge}${pesoHtml}</div>`;
 }
 
@@ -392,7 +414,6 @@ function renderAtivosRecomendados() {
   const data = CARTEIRAS[perfilAtivo];
   if (!data) return;
   
-  // ativos normais (sem badge previdência)
   const ativosPorClasse = {};
   for (let ativo of data.ativos) {
     if (!ativosPorClasse[ativo.classe]) ativosPorClasse[ativo.classe] = [];
@@ -403,21 +424,19 @@ function renderAtivosRecomendados() {
   for (let classe of CLASSES_ORDER) {
     const lista = ativosPorClasse[classe];
     if (!lista || lista.length === 0) continue;
-    html += `<div style="margin-top:0.8rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
+    html += `<div style="margin-top:0.8rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${escapeHtml(classe)}</span></div>`;
     for (let ativo of lista) {
       html += montarHtmlAtivo(ativo, true, false);
     }
   }
   
-  // Seção Previdência (expansível)
   if (data.previdencia && data.previdencia.length > 0) {
     html += `<div style="margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 8px;">`;
-    html += `<div class="prev-button" onclick="this.nextElementSibling.classList.toggle('show'); this.querySelector('.prev-arrow').textContent = this.nextElementSibling.classList.contains('show') ? '▼' : '▶';">`;
+    html += `<div class="prev-button" data-prev-toggle>`;
     html += `<span class="prev-arrow">▶</span> 📌 Previdência <span style="font-size: 11px; margin-left: 6px;">(clique para expandir)</span>`;
     html += `</div>`;
-    html += `<div class="prev-content">`;
+    html += `<div class="prev-content" data-prev-content>`;
     
-    // agrupar ativos de previdência por classe
     const prevPorClasse = {};
     for (let atv of data.previdencia) {
       if (!prevPorClasse[atv.classe]) prevPorClasse[atv.classe] = [];
@@ -426,9 +445,8 @@ function renderAtivosRecomendados() {
     for (let classe of CLASSES_ORDER) {
       const listaPrev = prevPorClasse[classe];
       if (!listaPrev || listaPrev.length === 0) continue;
-      html += `<div class="separator-prev">${classe}</div>`;
+      html += `<div class="separator-prev">${escapeHtml(classe)}</div>`;
       for (let atv of listaPrev) {
-        // isPrev = true → adiciona badge "Previdência" azul
         html += montarHtmlAtivo(atv, false, true);
       }
     }
@@ -437,6 +455,24 @@ function renderAtivosRecomendados() {
   
   html += `</div>`;
   document.getElementById('ativosRecomendadosContainer').innerHTML = html;
+  
+  // Reatribuir eventos dos botões de previdência
+  document.querySelectorAll('[data-prev-toggle]').forEach(btn => {
+    btn.removeEventListener('click', togglePrevContent);
+    btn.addEventListener('click', togglePrevContent);
+  });
+}
+
+function togglePrevContent(e) {
+  const btn = e.currentTarget;
+  const content = btn.nextElementSibling;
+  if (content && content.classList) {
+    content.classList.toggle('show');
+    const arrowSpan = btn.querySelector('.prev-arrow');
+    if (arrowSpan) {
+      arrowSpan.textContent = content.classList.contains('show') ? '▼' : '▶';
+    }
+  }
 }
 
 function refreshPorPerfil() {
@@ -477,7 +513,15 @@ function initTheme() {
   });
 }
 
-document.getElementById('hDate').textContent = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+// Atualiza data e hora no header
+function updateDateTime() {
+  const now = new Date();
+  const options = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+  document.getElementById('hDate').textContent = now.toLocaleDateString('pt-BR', options);
+}
+updateDateTime();
+setInterval(updateDateTime, 60000); // atualiza a cada minuto
+
 initTheme();
 renderPerfis();
 refreshPorPerfil();
