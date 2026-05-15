@@ -136,16 +136,18 @@ body.light .perfil-btn.ativo {
 .badge-renda-fixa-global { background: rgba(26, 188, 156, 0.15); color: #1abc9c; border-color: rgba(26, 188, 156, 0.5); }
 .badge-renda-variavel-global { background: rgba(230, 126, 34, 0.15); color: #e67e22; border-color: rgba(230, 126, 34, 0.5); }
 
-/* Badge exclusiva para Previdência */
+/* Badge exclusiva para Previdência - azul sólido com texto branco */
 .badge-previdencia {
-  background: rgba(128, 0, 128, 0.2);
-  color: #c77dff;
-  border-color: rgba(128, 0, 128, 0.5);
+  background: #1e6df2;
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
+  text-shadow: none;
 }
 body.light .badge-previdencia {
-  background: rgba(128, 0, 128, 0.15);
-  color: #7d3c98;
-  border-color: #a569bd;
+  background: #1e6df2;
+  color: #ffffff;
+  border: none;
 }
 
 body.light .badge-prefixado { background: rgba(212, 160, 23, 0.25); color: #7a5c0e; border-color: #d4a017; }
@@ -215,7 +217,7 @@ body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); co
     </div>
   </div>
 </main>
-<footer class="footer">📌 Clique no nome do ativo para mais informações. Ativos de Previdência possuem uma badge roxa identificadora.</footer>
+<footer class="footer">📌 Clique no nome do ativo para mais informações. Ativos de Previdência possuem uma badge azul com texto branco.</footer>
 
 <script>
 // ============================================================
@@ -306,7 +308,7 @@ const CARTEIRAS = {
           { parte: "NSDV11", link: "https://maisretorno.com/etf/nsdv11" }
         ] }
     ],
-    previdencia: [  // mesma composição do Moderado
+    previdencia: [
       { nome: "Brave Prev XP Seg FIC FIRF CP", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/brave-prev-xp-seguros-fic-fi-rf-cp-rl-1" },
       { nome: "Patria Prev XP Seg", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/patria-previdenciario-xp-seg-fic-multimercado-cp-rl" },
       { nome: "AZ Quest Altro Prev XP Seg FIC FIM CP", classe: "Pós-fixado", link: "https://maisretorno.com/fundo/az-quest-altro-prev-xp-seg-fic-multimercado-cp-rl-1" },
@@ -353,7 +355,7 @@ function renderCarteiraRecomendada() {
 }
 
 // Função que monta o HTML de um ativo
-// isPrev: se true, adiciona a badge "Previdência"
+// isPrev: se true, adiciona a badge "Previdência" (azul sólido com texto branco)
 function montarHtmlAtivo(ativo, exibirPeso = true, isPrev = false) {
   const pesoFormatado = (ativo.peso !== undefined && exibirPeso) ? (ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`) : "—";
   const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
@@ -373,7 +375,7 @@ function montarHtmlAtivo(ativo, exibirPeso = true, isPrev = false) {
     nomeHtml = `<span class="ativo-nome" style="cursor: default;">${ativo.nome}</span>`;
   }
   
-  // Badge previdência (se aplicável)
+  // Badge previdência (apenas se isPrev = true)
   const prevBadge = isPrev ? `<span class="badge-previdencia">Previdência</span>` : '';
   
   // Badge da classe de investimento
@@ -426,7 +428,7 @@ function renderAtivosRecomendados() {
       if (!listaPrev || listaPrev.length === 0) continue;
       html += `<div class="separator-prev">${classe}</div>`;
       for (let atv of listaPrev) {
-        // isPrev = true → adiciona badge "Previdência"
+        // isPrev = true → adiciona badge "Previdência" azul
         html += montarHtmlAtivo(atv, false, true);
       }
     }
