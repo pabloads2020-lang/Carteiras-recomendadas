@@ -100,6 +100,7 @@ body.light .perfil-btn.ativo {
 .ativo-row { 
   display: flex; align-items: center; gap: 12px; padding: 8px 6px; border-radius: 8px; 
   background: var(--ativo-item-bg); margin-bottom: 6px; font-size: 13px;
+  flex-wrap: wrap;
 }
 .ativo-nome {
   flex: 1; font-weight: 500;
@@ -114,7 +115,7 @@ body.light .perfil-btn.ativo {
   color: var(--gold);
   text-decoration: underline;
 }
-.ativo-classe {
+.ativo-classe, .badge-previdencia {
   font-size: 11px;
   font-weight: 700;
   padding: 4px 12px;
@@ -126,7 +127,7 @@ body.light .perfil-btn.ativo {
 }
 .ativo-peso { font-weight: 700; color: var(--gold); min-width: 55px; text-align: right; font-family: monospace; }
 
-/* Badges estilo neon */
+/* Badges padrão */
 .badge-prefixado { background: rgba(245, 200, 66, 0.15); color: #f5c842; border-color: rgba(245, 200, 66, 0.5); }
 .badge-posfixado { background: rgba(52, 152, 219, 0.15); color: #5dade2; border-color: rgba(52, 152, 219, 0.5); }
 .badge-inflacao { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border-color: rgba(46, 204, 113, 0.5); }
@@ -134,6 +135,19 @@ body.light .perfil-btn.ativo {
 .badge-renda-variavel { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border-color: rgba(231, 76, 60, 0.5); }
 .badge-renda-fixa-global { background: rgba(26, 188, 156, 0.15); color: #1abc9c; border-color: rgba(26, 188, 156, 0.5); }
 .badge-renda-variavel-global { background: rgba(230, 126, 34, 0.15); color: #e67e22; border-color: rgba(230, 126, 34, 0.5); }
+
+/* Badge exclusiva para Previdência */
+.badge-previdencia {
+  background: rgba(128, 0, 128, 0.2);
+  color: #c77dff;
+  border-color: rgba(128, 0, 128, 0.5);
+}
+body.light .badge-previdencia {
+  background: rgba(128, 0, 128, 0.15);
+  color: #7d3c98;
+  border-color: #a569bd;
+}
+
 body.light .badge-prefixado { background: rgba(212, 160, 23, 0.25); color: #7a5c0e; border-color: #d4a017; }
 body.light .badge-posfixado { background: rgba(41, 128, 185, 0.25); color: #1a5276; border-color: #2980b9; }
 body.light .badge-inflacao { background: rgba(39, 174, 96, 0.25); color: #1e6b3e; border-color: #27ae60; }
@@ -201,7 +215,7 @@ body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); co
     </div>
   </div>
 </main>
-<footer class="footer">📌 Clique no nome do ativo para acessar mais informações. A seção Previdência é expansível e os pesos indicam "—" (sugestões sem alocação fixa).</footer>
+<footer class="footer">📌 Clique no nome do ativo para mais informações. Ativos de Previdência possuem uma badge roxa identificadora.</footer>
 
 <script>
 // ============================================================
@@ -338,32 +352,45 @@ function renderCarteiraRecomendada() {
   container.innerHTML = html;
 }
 
-function montarHtmlAtivo(ativo, exibirPeso = true) {
+// Função que monta o HTML de um ativo
+// isPrev: se true, adiciona a badge "Previdência"
+function montarHtmlAtivo(ativo, exibirPeso = true, isPrev = false) {
   const pesoFormatado = (ativo.peso !== undefined && exibirPeso) ? (ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`) : "—";
   const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
   
+  // Parte do nome (pode ser link ou texto)
+  let nomeHtml = '';
   if (ativo.multiLink) {
-    let nomeHtml = '';
+    let parts = [];
     for (let i = 0; i < ativo.multiLink.length; i++) {
       const item = ativo.multiLink[i];
-      nomeHtml += `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome" style="display: inline-block;">${item.parte}</a>`;
-      if (i < ativo.multiLink.length - 1) nomeHtml += ` <span style="color: var(--text3);">/</span> `;
+      parts.push(`<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome" style="display: inline-block;">${item.parte}</a>`);
     }
-    return `<div class="ativo-row"><div style="flex:1; display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline;">${nomeHtml}</div><span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>${exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '<span class="ativo-peso" style="opacity:0.7">—</span>'}</div>`;
-  } 
-  else if (ativo.link && ativo.link.trim() !== "") {
-    return `<div class="ativo-row"><a href="${ativo.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome">${ativo.nome}</a><span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>${exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '<span class="ativo-peso" style="opacity:0.7">—</span>'}</div>`;
-  } 
-  else {
-    return `<div class="ativo-row"><span class="ativo-nome" style="cursor: default;">${ativo.nome}</span><span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>${exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '<span class="ativo-peso" style="opacity:0.7">—</span>'}</div>`;
+    nomeHtml = `<div style="flex:1; display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline;">${parts.join(' <span style="color: var(--text3);">/</span> ')}</div>`;
+  } else if (ativo.link && ativo.link.trim() !== "") {
+    nomeHtml = `<a href="${ativo.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome">${ativo.nome}</a>`;
+  } else {
+    nomeHtml = `<span class="ativo-nome" style="cursor: default;">${ativo.nome}</span>`;
   }
+  
+  // Badge previdência (se aplicável)
+  const prevBadge = isPrev ? `<span class="badge-previdencia">Previdência</span>` : '';
+  
+  // Badge da classe de investimento
+  const classeBadge = `<span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>`;
+  
+  // Peso
+  const pesoHtml = exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : `<span class="ativo-peso" style="opacity:0.7">—</span>`;
+  
+  // Ordem: nomeHtml + prevBadge + classeBadge + pesoHtml
+  return `<div class="ativo-row">${nomeHtml}${prevBadge}${classeBadge}${pesoHtml}</div>`;
 }
 
 function renderAtivosRecomendados() {
   const data = CARTEIRAS[perfilAtivo];
   if (!data) return;
   
-  // ativos normais
+  // ativos normais (sem badge previdência)
   const ativosPorClasse = {};
   for (let ativo of data.ativos) {
     if (!ativosPorClasse[ativo.classe]) ativosPorClasse[ativo.classe] = [];
@@ -376,7 +403,7 @@ function renderAtivosRecomendados() {
     if (!lista || lista.length === 0) continue;
     html += `<div style="margin-top:0.8rem;"><span style="font-size:12px; font-weight:600; color:var(--gold);">${classe}</span></div>`;
     for (let ativo of lista) {
-      html += montarHtmlAtivo(ativo, true);
+      html += montarHtmlAtivo(ativo, true, false);
     }
   }
   
@@ -399,7 +426,8 @@ function renderAtivosRecomendados() {
       if (!listaPrev || listaPrev.length === 0) continue;
       html += `<div class="separator-prev">${classe}</div>`;
       for (let atv of listaPrev) {
-        html += montarHtmlAtivo(atv, false);  // sem peso (exibe "—")
+        // isPrev = true → adiciona badge "Previdência"
+        html += montarHtmlAtivo(atv, false, true);
       }
     }
     html += `</div></div>`;
