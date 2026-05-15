@@ -165,59 +165,72 @@ body.light .badge-renda-variavel-global { background: rgba(211, 84, 0, 0.25); co
     </div>
   </div>
 </main>
-<footer class="footer">📌 Alocações baseadas em carteiras modelo. Clique no nome do ativo para acessar mais informações (links serão inseridos em breve).</footer>
+<footer class="footer">📌 Clique no nome do ativo para acessar mais informações. Percentuais por classe e ativo conforme modelo original.</footer>
 
 <script>
-// =======================================================
-// CARTEIRAS - você pode adicionar o campo "link" para cada ativo
-// Exemplo: { nome: "Fundo XPTO", classe: "Pós-fixado", peso: 12, link: "https://exemplo.com/fundo" }
-// Se não houver link, o nome será exibido como texto simples.
-// =======================================================
+// ============================================================
+// BASE DE DADOS COM LINKS (e casos especiais com dois links)
+// ============================================================
 const CARTEIRAS = {
   Conservador: {
     classes: { "Prefixado": 15, "Pós-fixado": 85, "Inflação": 0, "Multimercado": 0, "Renda Variável": 0, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
-      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
-      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 15 },
-      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 19 },
-      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 6 },
-      { nome: "LCI/LCA - até 1 ano - 92% CDI", classe: "Pós-fixado", peso: 27 },
-      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7 },
-      { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 11 }
+      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15, link: null }, // sem link
+      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 15, link: "https://maisretorno.com/fundo/arx-fuji-fic-fif-rf-cp-rl" },
+      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 19, multiLink: [
+          { parte: "Bradesco Ultra FIC FIRF LP CP (IQ)", link: "https://maisretorno.com/fundo/bradesco-ultra-fif-cic-rf-cp-lp-rl" },
+          { parte: "SulAmérica Crédito Ativo", link: "https://maisretorno.com/fundo/sul-america-credito-ativo-fif-rf-cp-lp-rl" }
+        ] },
+      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 6, link: "https://maisretorno.com/fundo/compass-yield-30-fif-rf" },
+      { nome: "LCI/LCA - até 1 ano - 92% CDI", classe: "Pós-fixado", peso: 27, link: null },
+      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7, link: "https://maisretorno.com/fundo/valora-vanguard-fic-direitos-creditorios" },
+      { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 11, link: "https://maisretorno.com/fundo/xp-liquidez-fic-rf-referenciado-di-cp-rl-1" }
     ]
   },
   Moderado: {
     classes: { "Prefixado": 13, "Pós-fixado": 58, "Inflação": 20, "Multimercado": 5, "Renda Variável": 4, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
-      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 13 },
-      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 12 },
-      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 11 },
-      { nome: "Riza Statheros FIC FIM CP", classe: "Pós-fixado", peso: 6 },
-      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 6 },
-      { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 16 },
-      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7 },
-      { nome: "Trend Inflação Geral FIRF LP", classe: "Inflação", peso: 4 },
-      { nome: "NTN-B 2035", classe: "Inflação", peso: 16 },
-      { nome: "ACE Capital Advisory FIC FIM", classe: "Multimercado", peso: 2.5 },
-      { nome: "Kapitalo K10 Advisory FIC FIM", classe: "Multimercado", peso: 2.5 },
-      { nome: "Real Investor FIC FIA BDR Nível I", classe: "Renda Variável", peso: 2 },
-      { nome: "NDIV11/NSDV11", classe: "Renda Variável", peso: 2 }
+      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 13, link: null },
+      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 12, link: "https://maisretorno.com/fundo/arx-fuji-fic-fif-rf-cp-rl" },
+      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 11, multiLink: [
+          { parte: "Bradesco Ultra FIC FIRF LP CP (IQ)", link: "https://maisretorno.com/fundo/bradesco-ultra-fif-cic-rf-cp-lp-rl" },
+          { parte: "SulAmérica Crédito Ativo", link: "https://maisretorno.com/fundo/sul-america-credito-ativo-fif-rf-cp-lp-rl" }
+        ] },
+      { nome: "Riza Statheros FIC FIM CP", classe: "Pós-fixado", peso: 6, link: "https://maisretorno.com/fundo/riza-statheros-fic-fidc-rl" },
+      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 6, link: "https://maisretorno.com/fundo/compass-yield-30-fif-rf" },
+      { nome: "XP Liquidez FIC RF REF DI CP RL", classe: "Pós-fixado", peso: 16, link: "https://maisretorno.com/fundo/xp-liquidez-fic-rf-referenciado-di-cp-rl-1" },
+      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7, link: "https://maisretorno.com/fundo/valora-vanguard-fic-direitos-creditorios" },
+      { nome: "Trend Inflação Geral FIRF LP", classe: "Inflação", peso: 4, link: "https://maisretorno.com/fundo/trend-inflacao-geral-fi-rf-rl" },
+      { nome: "NTN-B 2035", classe: "Inflação", peso: 16, link: "https://maisretorno.com/tesouro-direto/tesouro-ipca-15-05-2035" },
+      { nome: "ACE Capital Advisory FIC FIM", classe: "Multimercado", peso: 2.5, link: "https://maisretorno.com/fundo/ace-capital-advisory-fif-da-classe-fic-mult-rl" },
+      { nome: "Kapitalo K10 Advisory FIC FIM", classe: "Multimercado", peso: 2.5, link: "https://maisretorno.com/fundo/kapitalo-k10-advisory-fif-cotas-fim" },
+      { nome: "Real Investor FIC FIA BDR Nível I", classe: "Renda Variável", peso: 2, link: "https://maisretorno.com/fundo/real-investor-fic-fif-acoes-rl" },
+      { nome: "NDIV11 / NSDV11", classe: "Renda Variável", peso: 2, multiLink: [
+          { parte: "NDIV11", link: "https://maisretorno.com/etf/ndiv11" },
+          { parte: "NSDV11", link: "https://maisretorno.com/etf/nsdv11" }
+        ] }
     ]
   },
   Agressivo: {
     classes: { "Prefixado": 15, "Pós-fixado": 50, "Inflação": 24, "Multimercado": 5, "Renda Variável": 6, "Renda Fixa Global": 0, "Renda Variável Global": 0 },
     ativos: [
-      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15 },
-      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 8 },
-      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 19 },
-      { nome: "Riza Statheros FIC FIM CP", classe: "Pós-fixado", peso: 6 },
-      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7 },
-      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 10 },
-      { nome: "NTN-B 2035", classe: "Inflação", peso: 24 },
-      { nome: "ACE Capital Advisory FIC FIM", classe: "Multimercado", peso: 2.5 },
-      { nome: "Kapitalo K10 Advisory FIC FIM", classe: "Multimercado", peso: 2.5 },
-      { nome: "Real Investor FIC FIA BDR Nível I", classe: "Renda Variável", peso: 3 },
-      { nome: "NDIV11/NSDV11", classe: "Renda Variável", peso: 3 }
+      { nome: "CDB 2 anos / LCI e LCA #feed #pré", classe: "Prefixado", peso: 15, link: null },
+      { nome: "Compass Yield 30 FIF RF CP LP RL", classe: "Pós-fixado", peso: 8, link: "https://maisretorno.com/fundo/compass-yield-30-fif-rf" },
+      { nome: "ARX Fuji FIC de FIF RF CP RL", classe: "Pós-fixado", peso: 19, link: "https://maisretorno.com/fundo/arx-fuji-fic-fif-rf-cp-rl" },
+      { nome: "Riza Statheros FIC FIM CP", classe: "Pós-fixado", peso: 6, link: "https://maisretorno.com/fundo/riza-statheros-fic-fidc-rl" },
+      { nome: "Valora Vanguard FIC de FIDC RL", classe: "Pós-fixado", peso: 7, link: "https://maisretorno.com/fundo/valora-vanguard-fic-direitos-creditorios" },
+      { nome: "Bradesco Ultra FIC FIRF LP CP (IQ) / SulAmérica Crédito Ativo", classe: "Pós-fixado", peso: 10, multiLink: [
+          { parte: "Bradesco Ultra FIC FIRF LP CP (IQ)", link: "https://maisretorno.com/fundo/bradesco-ultra-fif-cic-rf-cp-lp-rl" },
+          { parte: "SulAmérica Crédito Ativo", link: "https://maisretorno.com/fundo/sul-america-credito-ativo-fif-rf-cp-lp-rl" }
+        ] },
+      { nome: "NTN-B 2035", classe: "Inflação", peso: 24, link: "https://maisretorno.com/tesouro-direto/tesouro-ipca-15-05-2035" },
+      { nome: "ACE Capital Advisory FIC FIM", classe: "Multimercado", peso: 2.5, link: "https://maisretorno.com/fundo/ace-capital-advisory-fif-da-classe-fic-mult-rl" },
+      { nome: "Kapitalo K10 Advisory FIC FIM", classe: "Multimercado", peso: 2.5, link: "https://maisretorno.com/fundo/kapitalo-k10-advisory-fif-cotas-fim" },
+      { nome: "Real Investor FIC FIA BDR Nível I", classe: "Renda Variável", peso: 3, link: "https://maisretorno.com/fundo/real-investor-fic-fif-acoes-rl" },
+      { nome: "NDIV11 / NSDV11", classe: "Renda Variável", peso: 3, multiLink: [
+          { parte: "NDIV11", link: "https://maisretorno.com/etf/ndiv11" },
+          { parte: "NSDV11", link: "https://maisretorno.com/etf/nsdv11" }
+        ] }
     ]
   }
 };
@@ -267,8 +280,25 @@ function renderAtivosRecomendados() {
     for (let ativo of lista) {
       const pesoFormatado = ativo.peso % 1 === 0 ? `${ativo.peso}%` : `${ativo.peso.toFixed(2).replace('.', ',')}%`;
       const badgeClasse = badgeClassMap[ativo.classe] || "badge-posfixado";
-      // Se existir o campo "link", cria um link clicável. Caso contrário, apenas texto.
-      if (ativo.link && ativo.link.trim() !== "") {
+      
+      // Caso especial com múltiplos links
+      if (ativo.multiLink) {
+        let nomeHtml = '';
+        for (let i = 0; i < ativo.multiLink.length; i++) {
+          const item = ativo.multiLink[i];
+          nomeHtml += `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome" style="display: inline-block;">${item.parte}</a>`;
+          if (i < ativo.multiLink.length - 1) nomeHtml += ` <span style="color: var(--text3);">/</span> `;
+        }
+        html += `
+          <div class="ativo-row">
+            <div style="flex:1; display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline;">${nomeHtml}</div>
+            <span class="ativo-classe ${badgeClasse}">${ativo.classe}</span>
+            <span class="ativo-peso">${pesoFormatado}</span>
+          </div>
+        `;
+      }
+      // Caso com link único
+      else if (ativo.link && ativo.link.trim() !== "") {
         html += `
           <div class="ativo-row">
             <a href="${ativo.link}" target="_blank" rel="noopener noreferrer" class="ativo-nome">${ativo.nome}</a>
@@ -276,7 +306,9 @@ function renderAtivosRecomendados() {
             <span class="ativo-peso">${pesoFormatado}</span>
           </div>
         `;
-      } else {
+      }
+      // Sem link
+      else {
         html += `
           <div class="ativo-row">
             <span class="ativo-nome" style="cursor: default;">${ativo.nome}</span>
