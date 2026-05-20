@@ -552,5 +552,396 @@ initTheme();
 renderPerfis();
 refreshPorPerfil();
 </script>
+
+<!-- MODAL DE SENHA -->
+<div id="senhaOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1100; backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+  <div style="background:var(--bg2); border:1px solid var(--border2); border-radius:16px; padding:2rem; width:min(340px,90vw); box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+    <div style="text-align:center; margin-bottom:1.4rem;">
+      <div style="font-size:28px; margin-bottom:8px;">🔒</div>
+      <div style="font-weight:700; font-size:16px;">Área restrita</div>
+      <div style="font-size:13px; color:var(--text3); margin-top:4px;">Digite a senha para editar as carteiras</div>
+    </div>
+    <div style="position:relative; margin-bottom:10px;">
+      <input type="password" id="senhaInput" placeholder="Senha" onkeydown="if(event.key==='Enter')verificarSenha();"
+        style="width:100%; background:var(--bg3); border:1px solid var(--border2); color:var(--text); border-radius:8px; padding:10px 42px 10px 14px; font-size:14px; outline:none; box-sizing:border-box;">
+      <button onclick="toggleSenhaVisivel()" id="btnOlho" title="Mostrar/ocultar senha"
+        style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text3); font-size:17px; padding:2px 4px; line-height:1; transition:color 0.2s;">👁️</button>
+    </div>
+    <div id="senhaErro" style="display:none; font-size:12px; color:#e74c3c; margin-bottom:10px; text-align:center;">Senha incorreta. Tente novamente.</div>
+    <div style="display:flex; gap:8px;">
+      <button onclick="fecharSenha()" style="flex:1; background:var(--bg3); border:1px solid var(--border2); color:var(--text2); border-radius:8px; padding:10px; font-size:13px; font-weight:600; cursor:pointer;">Cancelar</button>
+      <button onclick="verificarSenha()" style="flex:1; background:var(--gold); color:#000; border:none; border-radius:8px; padding:10px; font-size:13px; font-weight:700; cursor:pointer;">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAINEL DE EDIÇÃO -->
+<div id="editOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999; backdrop-filter:blur(4px);"></div>
+<div id="editPanel" style="display:none; position:fixed; top:0; right:0; width:min(520px,100vw); height:100vh; background:var(--bg2); border-left:1px solid var(--border2); z-index:1000; overflow-y:auto; flex-direction:column;">
+  <div style="padding:1.2rem 1.4rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:var(--bg2); z-index:10;">
+    <div style="font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px;"><span style="color:var(--gold);">✏️</span> Editor de Carteiras</div>
+    <div style="display:flex; gap:8px;">
+      <button onclick="exportarHTML()" style="background:var(--gold); color:#000; border:none; border-radius:8px; padding:8px 14px; font-weight:700; font-size:13px; cursor:pointer;">💾 Exportar HTML</button>
+      <button onclick="fecharEditor()" style="background:var(--bg3); border:1px solid var(--border2); color:var(--text); border-radius:8px; padding:8px 12px; font-size:18px; cursor:pointer; line-height:1;">×</button>
+    </div>
+  </div>
+  <div style="padding:1rem 1.4rem;">
+    <div style="font-size:12px; color:var(--text3); margin-bottom:1rem; background:var(--bg3); border-radius:8px; padding:10px 12px; border-left:3px solid var(--gold);">
+      Edite os dados e clique em <strong style="color:var(--gold);">Exportar HTML</strong> para baixar o arquivo atualizado e substituir o atual.
+    </div>
+    <!-- Seletor de perfil no editor -->
+    <div style="display:flex; gap:8px; margin-bottom:1.2rem; flex-wrap:wrap;" id="editPerfilBtns"></div>
+    
+    <!-- Alocação de classes -->
+    <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.6rem;">Alocação por Classe (%)</div>
+    <div id="editClasses" style="background:var(--bg3); border-radius:10px; padding:1rem; margin-bottom:1.2rem;"></div>
+    
+    <!-- Ativos normais -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.6rem;">
+      <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px;">Ativos da Carteira</div>
+      <button onclick="adicionarAtivo(false)" style="background:rgba(245,200,66,0.15); border:1px solid rgba(245,200,66,0.5); color:var(--gold); border-radius:6px; padding:4px 10px; font-size:12px; font-weight:600; cursor:pointer;">+ Adicionar</button>
+    </div>
+    <div id="editAtivos" style="margin-bottom:1.2rem;"></div>
+    
+    <!-- Previdência -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.6rem;">
+      <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px;">Ativos de Previdência</div>
+      <button onclick="adicionarAtivo(true)" style="background:rgba(30,109,242,0.15); border:1px solid rgba(30,109,242,0.5); color:#5b9cf6; border-radius:6px; padding:4px 10px; font-size:12px; font-weight:600; cursor:pointer;">+ Adicionar</button>
+    </div>
+    <div id="editPrevidencia" style="margin-bottom:2rem;"></div>
+  </div>
+</div>
+
+<!-- Botão flutuante para abrir editor -->
+<button onclick="abrirEditor()" id="btnEditor" title="Editar carteiras" style="position:fixed; bottom:20px; right:12px; width:32px; height:32px; background:var(--gold); color:#000; border:none; border-radius:50%; font-size:16px; cursor:pointer; z-index:900; box-shadow:0 3px 12px rgba(245,200,66,0.35); transition:all 0.2s; display:flex; align-items:center; justify-content:center; opacity:0.85;">✏️</button>
+
+<script>
+
+// ============================================================
+// EDITOR DE CARTEIRAS
+// ============================================================
+
+// ——— CONFIGURAÇÃO DE SENHA ———————————————————————————————————
+// Para trocar a senha, altere apenas o valor abaixo:
+const SENHA_EDITOR = "carteiras2025";
+// ————————————————————————————————————————————————————————————
+
+let editPerfilAtivo = "Conservador";
+let editorAutorizado = false;
+
+function abrirEditor() {
+  if (editorAutorizado) {
+    _abrirPainelEditor();
+  } else {
+    const overlay = document.getElementById('senhaOverlay');
+    overlay.style.display = 'flex';
+    document.getElementById('senhaInput').value = '';
+    document.getElementById('senhaErro').style.display = 'none';
+    setTimeout(() => document.getElementById('senhaInput').focus(), 50);
+  }
+}
+
+function verificarSenha() {
+  const digitada = document.getElementById('senhaInput').value;
+  if (digitada === SENHA_EDITOR) {
+    editorAutorizado = true;
+    fecharSenha();
+    _abrirPainelEditor();
+  } else {
+    document.getElementById('senhaErro').style.display = 'block';
+    document.getElementById('senhaInput').value = '';
+    document.getElementById('senhaInput').focus();
+    // Animação de shake no modal
+    const modal = document.querySelector('#senhaOverlay > div');
+    modal.style.animation = 'none';
+    modal.style.transform = 'translateX(-8px)';
+    setTimeout(() => { modal.style.transform = 'translateX(8px)'; }, 80);
+    setTimeout(() => { modal.style.transform = 'translateX(0)'; modal.style.transition = 'transform 0.15s'; }, 160);
+  }
+}
+
+function fecharSenha() {
+  document.getElementById('senhaOverlay').style.display = 'none';
+  // Garante que o campo volta a ser password ao fechar
+  document.getElementById('senhaInput').type = 'password';
+  document.getElementById('btnOlho').textContent = '👁️';
+}
+
+function toggleSenhaVisivel() {
+  const input = document.getElementById('senhaInput');
+  const btn = document.getElementById('btnOlho');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+  }
+  input.focus();
+}
+
+function _abrirPainelEditor() {
+  document.getElementById('editOverlay').style.display = 'block';
+  document.getElementById('editPanel').style.display = 'flex';
+  editPerfilAtivo = perfilAtivo;
+  renderEditPerfis();
+  renderEditForm();
+}
+
+function fecharEditor() {
+  document.getElementById('editOverlay').style.display = 'none';
+  document.getElementById('editPanel').style.display = 'none';
+}
+
+document.getElementById('editOverlay').addEventListener('click', fecharEditor);
+
+function renderEditPerfis() {
+  const c = document.getElementById('editPerfilBtns');
+  c.innerHTML = Object.keys(CARTEIRAS).map(p => 
+    `<button onclick="trocarEditPerfil('${p}')" style="padding:8px 16px; border-radius:30px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid ${p===editPerfilAtivo?'rgba(245,200,66,0.6)':'var(--border2)'}; background:${p===editPerfilAtivo?'rgba(245,200,66,0.15)':'var(--bg3)'}; color:${p===editPerfilAtivo?'var(--gold)':'var(--text2)'};">${p}</button>`
+  ).join('');
+}
+
+function trocarEditPerfil(p) {
+  editPerfilAtivo = p;
+  renderEditPerfis();
+  renderEditForm();
+}
+
+const CLASSES_LISTA = ["Prefixado","Pós-fixado","Inflação","Multimercado","Renda Variável","Renda Fixa Global","Renda Variável Global"];
+
+function renderEditForm() {
+  const data = CARTEIRAS[editPerfilAtivo];
+  
+  // Classes
+  const editClassesEl = document.getElementById('editClasses');
+  editClassesEl.innerHTML = CLASSES_LISTA.map(cls => `
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+      <label style="flex:1; font-size:13px; color:var(--text2);">${cls}</label>
+      <input type="number" min="0" max="100" step="0.5" value="${data.classes[cls]||0}"
+        onchange="CARTEIRAS['${editPerfilAtivo}'].classes['${cls}']=parseFloat(this.value)||0; refreshPorPerfil();"
+        style="width:70px; background:var(--bg); border:1px solid var(--border2); color:var(--text); border-radius:6px; padding:6px 8px; font-size:13px; text-align:right;">
+      <span style="font-size:12px; color:var(--text3); width:15px;">%</span>
+    </div>
+  `).join('');
+  
+  // Ativos
+  renderEditAtivos(false);
+  renderEditAtivos(true);
+}
+
+function inputStyle() {
+  return 'background:var(--bg); border:1px solid var(--border2); color:var(--text); border-radius:6px; padding:8px 10px; font-size:13px; width:100%; box-sizing:border-box;';
+}
+
+function renderEditAtivos(isPrev) {
+  const data = CARTEIRAS[editPerfilAtivo];
+  const lista = isPrev ? data.previdencia : data.ativos;
+  const containerId = isPrev ? 'editPrevidencia' : 'editAtivos';
+  const tipoStr = isPrev ? 'previdencia' : 'ativos';
+  const isP = isPrev ? 'true' : 'false';
+
+  document.getElementById(containerId).innerHTML = lista.map((ativo, idx) => {
+    const isMulti = Array.isArray(ativo.multiLink);
+
+    // Seção de nome/links — muda conforme o modo
+    let linksHtml = '';
+    if (isMulti) {
+      // Cada parte tem nome + link próprio
+      const partes = ativo.multiLink.map((p, pi) => `
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:10px 12px; margin-bottom:6px; font-size:13px;">
+          <div style="display:flex; gap:6px; align-items:flex-start; margin-bottom:6px;">
+            <div style="flex:1;">
+              <div style="font-size:10px; color:var(--text3); margin-bottom:3px;">Nome ${pi+1}</div>
+              <input type="text" value="${escapeHtml(p.parte)}"
+                onchange="CARTEIRAS['${editPerfilAtivo}']['${tipoStr}'][${idx}].multiLink[${pi}].parte=this.value; syncNomeMulti(${idx},'${tipoStr}'); refreshPorPerfil();"
+                style="${inputStyle()}">
+            </div>
+            ${ativo.multiLink.length > 1 ? `<button onclick="removerParte(${idx},${pi},'${tipoStr}')" title="Remover esta parte"
+              style="background:rgba(231,76,60,0.1); border:1px solid rgba(231,76,60,0.3); color:#e74c3c; border-radius:6px; padding:5px 7px; font-size:11px; cursor:pointer; margin-top:17px;">✕</button>` : ''}
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--text3); margin-bottom:3px;">Link ${pi+1}</div>
+            <input type="text" value="${escapeHtml(p.link||'')}" placeholder="https://..."
+              onchange="CARTEIRAS['${editPerfilAtivo}']['${tipoStr}'][${idx}].multiLink[${pi}].link=this.value||null; refreshPorPerfil();"
+              style="${inputStyle()}">
+          </div>
+        </div>
+      `).join('');
+
+      linksHtml = `
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <div style="font-size:10px; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Ativos vinculados neste card</div>
+            <button onclick="adicionarParte(${idx},'${tipoStr}')"
+              style="font-size:11px; background:rgba(245,200,66,0.1); border:1px solid rgba(245,200,66,0.4); color:var(--gold); border-radius:6px; padding:3px 8px; cursor:pointer; font-weight:600;">+ parte</button>
+          </div>
+          ${partes}
+        </div>`;
+    } else {
+      // Ativo simples — nome + link únicos
+      linksHtml = `
+        <div style="margin-bottom:8px;">
+          <div style="font-size:10px; color:var(--text3); margin-bottom:3px;">Nome</div>
+          <input type="text" value="${escapeHtml(ativo.nome)}"
+            onchange="CARTEIRAS['${editPerfilAtivo}']['${tipoStr}'][${idx}].nome=this.value; refreshPorPerfil();"
+            style="${inputStyle()}">
+        </div>
+        <div style="margin-bottom:8px;">
+          <div style="font-size:10px; color:var(--text3); margin-bottom:3px;">Link (opcional)</div>
+          <input type="text" value="${escapeHtml(ativo.link||'')}" placeholder="https://..."
+            onchange="CARTEIRAS['${editPerfilAtivo}']['${tipoStr}'][${idx}].link=this.value||null; refreshPorPerfil();"
+            style="${inputStyle()}">
+        </div>`;
+    }
+
+    // Toggle para alternar entre simples e multi
+    const toggleBtn = isMulti
+      ? `<button onclick="converterParaSimples(${idx},'${tipoStr}')" title="Voltar para ativo único"
+           style="font-size:10px; background:rgba(149,165,166,0.1); border:1px solid rgba(149,165,166,0.3); color:var(--text3); border-radius:6px; padding:3px 8px; cursor:pointer;">← ativo único</button>`
+      : `<button onclick="converterParaMulti(${idx},'${tipoStr}')" title="Adicionar segundo ativo neste card"
+           style="font-size:10px; background:rgba(245,200,66,0.08); border:1px solid rgba(245,200,66,0.3); color:var(--gold); border-radius:6px; padding:3px 8px; cursor:pointer;">+ 2º ativo/link</button>`;
+
+    return `
+    <div style="background:var(--bg3); border:1px solid ${isMulti ? 'rgba(245,200,66,0.25)' : 'var(--border)'}; border-radius:10px; padding:12px; margin-bottom:8px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          ${isMulti ? `<span style="font-size:10px; background:rgba(245,200,66,0.15); color:var(--gold); border:1px solid rgba(245,200,66,0.4); border-radius:4px; padding:2px 7px; font-weight:700;">DUPLO</span>` : ''}
+          ${toggleBtn}
+        </div>
+        <button onclick="removerAtivo(${idx}, ${isP})" style="background:rgba(231,76,60,0.15); border:1px solid rgba(231,76,60,0.4); color:#e74c3c; border-radius:6px; padding:5px 8px; font-size:12px; cursor:pointer;">🗑</button>
+      </div>
+
+      ${linksHtml}
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div>
+          <div style="font-size:10px; color:var(--text3); margin-bottom:3px;">Classe</div>
+          <select onchange="CARTEIRAS['${editPerfilAtivo}']['${tipoStr}'][${idx}].classe=this.value; refreshPorPerfil();"
+            style="${inputStyle()} cursor:pointer;">
+            ${CLASSES_LISTA.map(c => `<option value="${c}" ${ativo.classe===c?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        ${!isPrev ? `<div>
+          <div style="font-size:10px; color:var(--text3); margin-bottom:3px;">Peso (%)</div>
+          <input type="number" min="0" max="100" step="0.5" value="${ativo.peso||0}"
+            onchange="CARTEIRAS['${editPerfilAtivo}']['${tipoStr}'][${idx}].peso=parseFloat(this.value)||0; refreshPorPerfil();"
+            style="${inputStyle()} text-align:right;">
+        </div>` : '<div></div>'}
+      </div>
+    </div>`;
+  }).join('') || `<div style="font-size:13px; color:var(--text3); padding:12px; text-align:center; background:var(--bg3); border-radius:8px;">Nenhum ativo cadastrado</div>`;
+}
+
+// Sincroniza o campo .nome do ativo com as partes do multiLink (exibição no card)
+function syncNomeMulti(idx, tipoStr) {
+  const ml = CARTEIRAS[editPerfilAtivo][tipoStr][idx].multiLink;
+  CARTEIRAS[editPerfilAtivo][tipoStr][idx].nome = ml.map(p => p.parte).join(' / ');
+}
+
+// Converte ativo simples → multiLink (adiciona 2ª parte)
+function converterParaMulti(idx, tipoStr) {
+  const ativo = CARTEIRAS[editPerfilAtivo][tipoStr][idx];
+  const primeiroNome = ativo.nome || 'Ativo 1';
+  const primeiroLink = ativo.link || null;
+  CARTEIRAS[editPerfilAtivo][tipoStr][idx] = {
+    nome: primeiroNome + ' / Ativo 2',
+    classe: ativo.classe,
+    ...(tipoStr === 'ativos' ? { peso: ativo.peso || 0 } : {}),
+    multiLink: [
+      { parte: primeiroNome, link: primeiroLink },
+      { parte: 'Ativo 2', link: null }
+    ]
+  };
+  renderEditForm();
+  refreshPorPerfil();
+}
+
+// Converte multiLink → ativo simples (usa a 1ª parte)
+function converterParaSimples(idx, tipoStr) {
+  const ativo = CARTEIRAS[editPerfilAtivo][tipoStr][idx];
+  const primeira = ativo.multiLink[0] || {};
+  CARTEIRAS[editPerfilAtivo][tipoStr][idx] = {
+    nome: primeira.parte || 'Ativo',
+    classe: ativo.classe,
+    ...(tipoStr === 'ativos' ? { peso: ativo.peso || 0 } : {}),
+    link: primeira.link || null
+  };
+  renderEditForm();
+  refreshPorPerfil();
+}
+
+// Adiciona mais uma parte ao multiLink
+function adicionarParte(idx, tipoStr) {
+  CARTEIRAS[editPerfilAtivo][tipoStr][idx].multiLink.push({ parte: 'Novo ativo', link: null });
+  syncNomeMulti(idx, tipoStr);
+  renderEditForm();
+  refreshPorPerfil();
+}
+
+// Remove uma parte do multiLink
+function removerParte(idx, pi, tipoStr) {
+  CARTEIRAS[editPerfilAtivo][tipoStr][idx].multiLink.splice(pi, 1);
+  syncNomeMulti(idx, tipoStr);
+  if (CARTEIRAS[editPerfilAtivo][tipoStr][idx].multiLink.length === 1) {
+    converterParaSimples(idx, tipoStr);
+    return;
+  }
+  renderEditForm();
+  refreshPorPerfil();
+}
+
+function adicionarAtivo(isPrev) {
+  const tipoStr = isPrev ? 'previdencia' : 'ativos';
+  const novoAtivo = { nome: "Novo ativo", classe: "Pós-fixado", link: null };
+  if (!isPrev) novoAtivo.peso = 0;
+  CARTEIRAS[editPerfilAtivo][tipoStr].push(novoAtivo);
+  renderEditForm();
+  refreshPorPerfil();
+}
+
+function removerAtivo(idx, isPrev) {
+  const tipoStr = isPrev === true || isPrev === 'true' ? 'previdencia' : 'ativos';
+  CARTEIRAS[editPerfilAtivo][tipoStr].splice(idx, 1);
+  renderEditForm();
+  refreshPorPerfil();
+}
+
+function exportarHTML() {
+  const carteirasJSON = JSON.stringify(CARTEIRAS, null, 2);
+
+  // Fecha painéis antes de capturar o HTML, para o arquivo exportado abrir limpo
+  const editOverlay  = document.getElementById('editOverlay');
+  const editPanel    = document.getElementById('editPanel');
+  const senhaOverlay = document.getElementById('senhaOverlay');
+  const prevEO = editOverlay.style.display;
+  const prevEP = editPanel.style.display;
+  const prevSO = senhaOverlay.style.display;
+  editOverlay.style.display  = 'none';
+  editPanel.style.display    = 'none';
+  senhaOverlay.style.display = 'none';
+
+  const htmlAtual = document.documentElement.outerHTML;
+
+  // Restaura estado atual
+  editOverlay.style.display  = prevEO;
+  editPanel.style.display    = prevEP;
+  senhaOverlay.style.display = prevSO;
+
+  // Injeta dados atualizados e reseta autorização
+  const regex = /const CARTEIRAS = \{[\s\S]*?\};(?=\s*\nconst CLASSES_ORDER)/;
+  let novoHtml = htmlAtual.replace(regex, 'const CARTEIRAS = ' + carteirasJSON + ';');
+  novoHtml = novoHtml.replace('let editorAutorizado = true;', 'let editorAutorizado = false;');
+
+  const blob = new Blob(['<!DOCTYPE html>\n' + novoHtml], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'carteiras_recomendadas.html';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+</script>
 </body>
 </html>
