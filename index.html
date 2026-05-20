@@ -26,16 +26,127 @@
   --font-size-separator-prev: 11px;
 }
 
-/* Ajustes para mobile (telas <= 600px) */
+/* ============================================================
+   RESPONSIVO MOBILE — iPhone, Android, telas pequenas
+   ============================================================ */
+
+/* Tablet / phablet */
+@media (max-width: 800px) {
+  .grid2 { grid-template-columns: 1fr; gap: 1.2rem; }
+  .card  { padding: 1.2rem; }
+  .perfil-btn { padding: 14px 12px; min-width: 100px; }
+}
+
+/* Mobile ≤ 600px — smartphones em geral */
 @media (max-width: 600px) {
   :root {
-    --font-size-card-title: 11px;
-    --font-size-classe-nome: 13px;
-    --font-size-ativo-nome: 13px;   /* um pouco menor no celular */
-    --font-size-badge: 10px;
-    --font-size-ativo-peso: 13px;
-    --font-size-perfil-btn: 14px;
+    --font-size-card-title:  11px;
+    --font-size-classe-nome: 12px;
+    --font-size-ativo-nome:  13px;
+    --font-size-badge:        9px;
+    --font-size-ativo-peso:  12px;
+    --font-size-perfil-btn:  13px;
   }
+
+  /* Layout geral */
+  .main       { padding: 0.75rem; }
+  .header     { padding: 0 0.75rem; height: 54px; }
+  .footer     { font-size: 11px; padding: 12px 16px; text-align: center; line-height: 1.6; }
+
+  /* Header: logo menor */
+  .header-logo { font-size: 13px; gap: 6px; }
+  .dot         { width: 24px; height: 24px; font-size: 12px; }
+
+  /* Perfis: wrap em duas linhas se necessário */
+  .perfis-row {
+    gap: 8px;
+    margin-bottom: 1.2rem;
+    justify-content: center;
+  }
+  .perfil-btn {
+    flex: 1 1 calc(50% - 8px);
+    max-width: calc(50% - 4px);
+    min-width: 0;
+    padding: 12px 8px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  /* Cards */
+  .card { padding: 1rem; border-radius: 14px; }
+  .card-title { font-size: 10px; letter-spacing: 1px; margin-bottom: 0.75rem; padding-bottom: 0.6rem; }
+
+  /* Barra de alocação */
+  .bar-wrapper { width: 56px; }
+  .classe-pct  { min-width: 42px; font-size: 12px; }
+  .classe-nome { font-size: 12px; }
+  .classe-item { gap: 8px; padding: 8px 0; }
+
+  /* Ativo row: empilha nome em cima, badges/peso embaixo */
+  .ativo-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 10px 10px;
+  }
+  .ativo-nome {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .ativo-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .ativo-peso {
+    margin-left: auto;
+    font-size: 12px;
+    min-width: 0;
+  }
+  .ativo-classe, .badge-previdencia {
+    font-size: 9px;
+    padding: 3px 9px;
+  }
+  /* Badge previdência em row mobile */
+  .prev-row .ativo-classe { margin-left: 0; }
+
+  /* Botão flutuante: margem extra para barra de navegação iOS/Android */
+  #btnEditor {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+  }
+
+  /* Painel editor: tela cheia no mobile */
+  #editPanel {
+    width: 100vw !important;
+    border-left: none !important;
+    border-top: 1px solid var(--border2);
+    border-radius: 16px 16px 0 0;
+    top: auto !important;
+    bottom: 0;
+    height: 92dvh;
+  }
+}
+
+/* Telas muito pequenas (ex: celulares "chineses" 360px) */
+@media (max-width: 380px) {
+  :root {
+    --font-size-ativo-nome:  12px;
+    --font-size-perfil-btn:  12px;
+  }
+  .perfil-btn {
+    flex: 1 1 calc(50% - 6px);
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+  .card { padding: 0.85rem; }
+  .main { padding: 0.6rem; }
+  .header-logo span:last-child { display: none; } /* esconde texto do logo se ficar apertado */
 }
 
 /* Cores e outros (sem alteração) */
@@ -108,15 +219,7 @@ body.light .perfil-btn.ativo {
 }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
-@media (max-width: 800px) { 
-  .grid2 { grid-template-columns: 1fr; gap: 1.2rem; }
-  .card { padding: 1.2rem; }
-  .perfil-btn { padding: 14px 12px; min-width: 100px; }
-}
-@media (max-width: 600px) {
-  .main { padding: 1rem; }
-  .bar-wrapper { width: 70px; }
-}
+/* responsivo consolidado acima */
 
 .classe-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .classe-item:last-child { border-bottom: none; }
@@ -181,6 +284,10 @@ body.light .perfil-btn.ativo {
 /* Para ativos de Previdência: a badge da classe vai para a direita */
 .prev-row .ativo-classe {
   margin-left: auto;
+}
+/* No desktop, meta-row é inline (flex row junto com o nome) */
+.ativo-meta-row {
+  display: contents; /* herda o flex do pai sem criar bloco próprio */
 }
 
 /* Badges padrão */
@@ -435,7 +542,9 @@ function montarHtmlAtivo(ativo, exibirPeso = true, isPrev = false) {
   const pesoHtml = exibirPeso ? `<span class="ativo-peso">${pesoFormatado}</span>` : '';
   
   const rowClass = isPrev ? 'ativo-row prev-row' : 'ativo-row';
-  return `<div class="${rowClass}">${nomeHtml}${prevBadge}${classeBadge}${pesoHtml}</div>`;
+  // .ativo-meta-row agrupa badges e peso numa mesma linha no mobile
+  const metaRow = `<div class="ativo-meta-row">${prevBadge}${classeBadge}${pesoHtml}</div>`;
+  return `<div class="${rowClass}">${nomeHtml}${metaRow}</div>`;
 }
 
 function renderAtivosRecomendados() {
