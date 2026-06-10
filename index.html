@@ -984,7 +984,13 @@ function initTheme() {
 
 // ==================== Funções da topbar (voltar, nova aba, relógio) ====================
 document.getElementById('hubBackBtn')?.addEventListener('click', () => {
-  window.location.href = "https://pabloads2020-lang.github.io/Dashboard-Ferramentas-Integradas/";
+  if (window.self !== window.top) {
+    // Rodando dentro do Hub: avisa o pai para voltar à home
+    window.parent.postMessage({ action: 'hubNavigate', target: 'home' }, '*');
+  } else {
+    // Aberto diretamente no browser: navega para o Hub
+    window.location.href = "https://pabloads2020-lang.github.io/Dashboard-Ferramentas-Integradas/";
+  }
 });
 document.getElementById('hubNewTabBtn')?.addEventListener('click', () => {
   window.open(window.location.href, '_blank');
